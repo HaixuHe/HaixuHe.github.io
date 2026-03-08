@@ -1,0 +1,182 @@
+{
+  "profile": {
+    "name": "贺海旭",
+    "nameEn": "Haixu He",
+    "title": "遥感科学与技术 | 博士研究生",
+    "description": "专注于遥感图像处理、深度学习与地球观测应用研究",
+    "email": "20161001925@cug.edu.cn",
+    "address": "中国地质大学（武汉）计算机学院",
+    "university": "中国地质大学（武汉）",
+    "department": "未来技术学院",
+    "lab": "",
+    "education": [
+      {
+        "degree": "博士",
+        "major": "地质资源与地质工程",
+        "school": "中国地质大学（武汉）",
+        "year": "2023-至今"
+      },
+      {
+        "degree": "硕士",
+        "major": "计算机技术",
+        "school": "中国地质大学（武汉）",
+        "year": "2020-2023"
+      },
+      {
+        "degree": "学士",
+        "major": "土地资源管理",
+        "school": "中国地质大学（武汉）",
+        "year": "2016-2020"
+      }
+    ],
+    "researchInterests": [
+      "遥感图像智能解译",
+      "深度学习与计算机视觉",
+      "多源遥感数据融合"
+    ],
+    "socialLinks": {
+      "googleScholar": "https://scholar.google.com/citations?user=XXXXX",
+      "researchGate": "https://www.researchgate.net/profile/Haixu-He",
+      "github": "https://github.com/HaixuHe",
+      "linkedin": "https://www.linkedin.com/in/haixuhe",
+      "orcid": "https://orcid.org/0000-0000-0000-0000"
+    }
+  },
+  "stats": {
+    "citations": 500
+  },
+  "publications": [
+    {
+      "id": "pub231151",
+      "year": "2024",
+      "type": "conference",
+      "title": "Continuous semantic change monitoring of land cover with Landsat time series",
+      "authors": [
+        "Haixu He",
+        "Jining Yan"
+      ],
+      "journal": "2024 IEEE International Conference on Signal, Information and Data Processing (ICSIDP)",
+      "doi": "https://doi.org/10.1109/ICSIDP62679.2024.10869169",
+      "pdf": "",
+      "code": "",
+      "highlight": false,
+      "abstract": "Rapid urbanization has led to frequent land cover changes, making continuous monitoring essential for capturing land use dynamics and enabling quick responses. It is crucial to detect both the dates and types of these changes, which current change detection models struggle to achieve simultaneously. In this study, we propose a supervised approach called Temporal Semantic Recognition Change Detection (TSRCD), using a Transformer-based sliding detector to learn mappings from spectral data to land cover changes over time. During monitoring, the model utilizes previously detected land cover types and additional observations as dual prompts to iteratively predict the next time point’s land cover type. We validated our approach using all clear Landsat data from the Wuhan urban agglomeration between 2008 and 2022. Experiments show that increasing the peek window size improves change detection accuracy, stabilizing at around ten, with an approximate 8% improvement in F1 score compared to CCDC. TSRCD not only tracks the dates of land cover changes but also accurately identifies change types, achieving 92% accuracy. In summary, TSRCD provides a novel and comprehensive solution for monitoring land cover changes using long-term series remote sensing data.",
+      "citations": 0
+    },
+    {
+      "id": "pub465798",
+      "year": "2022",
+      "type": "journal",
+      "title": "Bayesian temporal tensor factorization-based interpolation for time-series remote sensing data with large-area missing observations",
+      "authors": [
+        "Haixu He",
+        "Jining Yan",
+        "Lizhe Wang",
+        "Dong Liang",
+        "Jianyi Peng",
+        "Chengjun Li"
+      ],
+      "journal": "IEEE Transactions on Geoscience and Remote Sensing",
+      "doi": "https://doi.org/10.1109/TGRS.2022.3140436",
+      "pdf": "",
+      "code": "https://github.com/HaixuHe/HTR-BTTF",
+      "highlight": false,
+      "abstract": "Land surface temperature (LST) is widely used in the ﬁeld of time-series remote sensing. However, due to the inﬂuence of cloud cover, the large area of LST data observation is missing, which seriously affects the later data analysis. In the past research, various effective interpolation methods have been developed, but they usually cannot effectively interpolate the image data with large observation missing. In this article, a new method for interpolating these missing data called Hilbert tensor rearrangement with Bayesian temporal tensor factorization (HTR-BTTF) is proposed. This method requires tensor rearrangement of remote sensing data, combined with BTTF method for interpolation. In order to evaluate the performance of our method, we select three real study areas with different climates, Wuhan, Harbin, and Kunming LST data during day and night, and add cloud covers with different sizes to the cold and warm season layers each year. BTTF, inverse distance weighted (IDW), harmonic analysis of time series (HANTS), and GapFill are used as comparison methods. Root-meansquare error (RMSE) is a comprehensive evaluation index of interpolation results. Experiments have shown that HTR-BTTF is an effective method for interpolating missing observations, which is better than other methods. In the simulation experiment of the largest cloud cover size, on average, the RMSE of the data ﬁlled using the HTR-BTTF method was 17.2% lower than that of BTTF and 54.9% lower than that of the GapFill method, and it shows good robustness and high accuracy.",
+      "citations": 7
+    },
+    {
+      "id": "pub228012",
+      "year": "2026",
+      "type": "journal",
+      "title": "Monthly monitoring of urban development and renewal at the block-level in China using Sentinel-2 time series",
+      "authors": [
+        "Haixu He",
+        "Jining Yan",
+        "Lirong Liu",
+        "Xu Long",
+        "Runyu Fan",
+        "Zhongchang Sun"
+      ],
+      "journal": "Remote Sensing of Environment",
+      "doi": "https://doi.org/10.1016/j.rse.2025.115070",
+      "pdf": "",
+      "code": "https://github.com/CUG-BEODL/SSC-SB",
+      "highlight": true,
+      "abstract": "Urban renewal has been elevated to a national strategy in China, leading to rapid development and transformation of street blocks. However, monitoring construction events at high temporal resolution remains challenging due to the limitations of existing methods, which often struggle with noise interference and lack continuous monitoring capabilities. To address this, we propose Semantic Similarity Contrast-based Street Block Monitoring (SSC-SB), a method that leverages Sentinel-2 time series imagery for automated, high-frequency detection of street block development and renewal. By extracting deep semantic features with a pretrained encoder, SSC-SB analyzes similarity curves to identify development and demolition construction events. Applied to the Middle Yangtze River Basin (MYRB) urban agglomeration shows that SSC-SB achieves 90.4% spatial domain accuracy, with construction start and end date detection accuracies of 68.8% and 54.9%, respectively. Results indicate an increasing emphasis on urban renewal, as demolished street blocks outnumbered new developments for the first time in 2023, with Hunan Province leading in renewal efforts, where renewal blocks accounted for 41.5% of all changed street blocks, reflecting a balanced focus on expansion and infrastructure renewal. Transfer experiments in Xi’an further demonstrate that SSC-SB retains up to 80% of the performance of a locally trained model when applied across regions without fine-tuning, indicating a decent level of generalizability. By providing fine-grained, continuous monitoring, SSC-SB presents a scalable solution for tracking urban transformation.",
+      "citations": 1
+    },
+    {
+      "id": "pub104438",
+      "year": "2024",
+      "type": "journal",
+      "title": "Time-series land cover change detection using deep learning-based temporal semantic segmentation",
+      "authors": [
+        "Haixu He",
+        "Jining Yan",
+        "Dong Liang",
+        "Zhongchang Sun",
+        "Jun Li",
+        "Lizhe Wang"
+      ],
+      "journal": "Remote Sensing of Environment",
+      "doi": "https://doi.org/10.1016/j.rse.2024.114101",
+      "pdf": "",
+      "code": "https://github.com/CUG-BEODL/TSSCD",
+      "highlight": true,
+      "abstract": "The process of sustainable urban development is accompanied by frequent and complex land cover changes, and thus, clarify accurate information on land cover changes can provide scientific data for urban management. To characterize urban development at an accurate spatiotemporal scale, a change detection model is not only required to provide accurate location (Where) and time (When) of the changes, but also semantic information on the change types (What). Accordingly, this study proposed a deep learning method for temporal semantic seg­ mentation change detection (TSSCD) that obtains information on the where, when, and what of changes simultaneously. TSSCD model bridges the semantic gap between remote sensing time series abrupt changes and land cover changes by learning the month-to-month mapping from spectral information to land cover types. We implemented a temporal semantic segmentation model based on the most classic fully convolutional network, where all two-dimensional convolutions and pooling operations were replaced with one-dimensional. We con­ ducted tests on the TSSCD in several urban study areas, and it consistently exhibited good accuracy. In most cases, it outperformed the BFAST and CCDC algorithms, except when only a single spectral band was used. Simultaneously, we analyzed the minimum data requirements for training a TSSCD. The TSSCD currently faces challenges in achieving strong generalization beyond the training data distribution. Additionally, we observed that change detection for specific land cover types can be achieved through the flexible configuration of TSSCD. Finally, we explored a method for constructing datasets using existing products to minimize data annotation efforts, yielding promising results. However, there is still some gap compared to complete manual annotation. Overall, the TSSCD model provided a novel solution to accurately characterize sustainable urban development at the spatiotemporal scale.",
+      "citations": 67
+    }
+  ],
+  "patents": [
+    {
+      "id": "pat972433",
+      "title": "",
+      "patentNumber": "",
+      "status": "pending",
+      "statusText": "审查中",
+      "inventors": [],
+      "year": "2026"
+    }
+  ],
+  "projects": [
+    {
+      "id": "proj001",
+      "title": "国家自然科学基金项目",
+      "subtitle": "基于深度学习的遥感图像智能解译关键技术研究",
+      "time": "2022 - 至今",
+      "role": "核心成员",
+      "description": "负责深度学习模型设计与优化，提出了一种新的注意力机制用于遥感图像语义分割，在多个公开数据集上取得了state-of-the-art的性能。",
+      "tags": [
+        "深度学习",
+        "语义分割",
+        "遥感图像"
+      ]
+    },
+    {
+      "id": "proj002",
+      "title": "国家重点研发计划子课题",
+      "subtitle": "多源遥感数据协同处理与信息提取",
+      "time": "2021 - 2023",
+      "role": "项目负责人",
+      "description": "主持子课题研究，开发了多源遥感数据融合算法，实现了光学与SAR数据的协同处理，有效提高了土地覆盖分类精度。",
+      "tags": [
+        "数据融合",
+        "SAR",
+        "分类"
+      ]
+    },
+    {
+      "id": "proj003",
+      "title": "横向合作项目",
+      "subtitle": "智慧城市遥感监测系统开发",
+      "time": "2020 - 2022",
+      "role": "技术骨干",
+      "description": "参与系统架构设计与核心算法开发，实现了城市建筑物自动提取、违章建筑检测等功能，已在多个城市推广应用。",
+      "tags": [
+        "智慧城市",
+        "目标检测",
+        "系统开发"
+      ]
+    }
+  ]
+}

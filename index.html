@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="遥感博士个人主页 - 研究领域、论文发表、专利与项目介绍">
+    <title>贺海旭 | 遥感博士</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <a href="#home" class="nav-logo">
+                <i class="fas fa-satellite"></i>
+                <span id="navName">Haixu He</span>
+            </a>
+            <button class="nav-toggle" id="nav-toggle" aria-label="菜单">
+                <i class="fas fa-bars"></i>
+            </button>
+            <ul class="nav-menu" id="nav-menu">
+                <li><a href="#home" class="nav-link active">首页</a></li>
+                <li><a href="#about" class="nav-link">关于我</a></li>
+                <li><a href="#publications" class="nav-link">论文发表</a></li>
+                <li><a href="#patents" class="nav-link">专利</a></li>
+                <li><a href="#projects" class="nav-link">项目经历</a></li>
+                <li><a href="#contact" class="nav-link">联系方式</a></li>
+                <li><a href="admin.html" class="nav-link admin-link" title="管理后台"><i class="fas fa-cog"></i></a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <section id="home" class="hero">
+        <div class="hero-background">
+            <div class="hero-overlay"></div>
+        </div>
+        <div class="hero-content">
+            <div class="hero-avatar">
+                <div class="avatar-placeholder">
+                    <i class="fas fa-user"></i>
+                </div>
+            </div>
+            <h1 class="hero-title" id="heroName">贺海旭</h1>
+            <p class="hero-subtitle" id="heroTitle">遥感科学与技术 | 博士研究生</p>
+            <p class="hero-description" id="heroDescription">专注于遥感图像处理、深度学习与地球观测应用研究</p>
+            <div class="hero-buttons">
+                <a href="#publications" class="btn btn-primary">
+                    <i class="fas fa-file-alt"></i> 查看论文
+                </a>
+                <a href="#contact" class="btn btn-secondary">
+                    <i class="fas fa-envelope"></i> 联系我
+                </a>
+            </div>
+            <div class="hero-social" id="heroSocial">
+                <a href="#" class="social-link" title="Google Scholar" id="linkGoogleScholar">
+                    <i class="fas fa-graduation-cap"></i>
+                </a>
+                <a href="#" class="social-link" title="ResearchGate" id="linkResearchGate">
+                    <i class="fab fa-researchgate"></i>
+                </a>
+                <a href="#" class="social-link" title="GitHub" id="linkGithub">
+                    <i class="fab fa-github"></i>
+                </a>
+                <a href="#" class="social-link" title="LinkedIn" id="linkLinkedin">
+                    <i class="fab fa-linkedin"></i>
+                </a>
+            </div>
+        </div>
+        <div class="scroll-indicator">
+            <i class="fas fa-chevron-down"></i>
+        </div>
+    </section>
+
+    <section id="about" class="section about-section">
+        <div class="container">
+            <h2 class="section-title">
+                <span class="title-icon"><i class="fas fa-user-graduate"></i></span>
+                关于我
+            </h2>
+            <div class="about-content">
+                <div class="about-text">
+                    <p class="about-intro" id="aboutIntro">
+                        你好！我是何海旭，一名遥感科学与技术专业的博士研究生。
+                        我的研究方向包括遥感图像处理、深度学习、计算机视觉及其在地球观测领域的应用。
+                    </p>
+                    <div class="about-details">
+                        <div class="detail-item">
+                            <i class="fas fa-university"></i>
+                            <div>
+                                <h4>教育背景</h4>
+                                <p id="educationInfo">博士 - 遥感科学与技术<br>硕士 - 摄影测量与遥感<br>学士 - 遥感科学与技术</p>
+                            </div>
+                        </div>
+                        <div class="detail-item">
+                            <i class="fas fa-microscope"></i>
+                            <div>
+                                <h4>研究方向</h4>
+                                <p id="researchInfo">遥感图像智能解译<br>深度学习与计算机视觉<br>多源遥感数据融合</p>
+                            </div>
+                        </div>
+                        <div class="detail-item">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <div>
+                                <h4>所在机构</h4>
+                                <p id="institutionInfo">XX大学 遥感信息工程学院<br>XX重点实验室</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="about-stats">
+                    <div class="stat-card">
+                        <div class="stat-number" data-target="15" id="statPubs">0</div>
+                        <div class="stat-label">发表论文</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" data-target="8" id="statPatents">0</div>
+                        <div class="stat-label">授权专利</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" data-target="10" id="statProjects">0</div>
+                        <div class="stat-label">参与项目</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" data-target="500" id="statCitations">0</div>
+                        <div class="stat-label">论文引用</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="publications" class="section publications-section">
+        <div class="container">
+            <h2 class="section-title">
+                <span class="title-icon"><i class="fas fa-file-alt"></i></span>
+                论文发表
+            </h2>
+            <div class="publications-filter">
+                <button class="filter-btn active" data-filter="all">全部</button>
+                <button class="filter-btn" data-filter="journal">期刊论文</button>
+                <button class="filter-btn" data-filter="conference">会议论文</button>
+            </div>
+            <div class="publications-list" id="publicationsList">
+            </div>
+        </div>
+    </section>
+
+    <section id="patents" class="section patents-section">
+        <div class="container">
+            <h2 class="section-title">
+                <span class="title-icon"><i class="fas fa-lightbulb"></i></span>
+                专利成果
+            </h2>
+            <div class="patents-grid" id="patentsList">
+            </div>
+        </div>
+    </section>
+
+    <section id="projects" class="section projects-section">
+        <div class="container">
+            <h2 class="section-title">
+                <span class="title-icon"><i class="fas fa-project-diagram"></i></span>
+                项目经历
+            </h2>
+            <div class="projects-timeline" id="projectsList">
+            </div>
+        </div>
+    </section>
+
+    <section id="contact" class="section contact-section">
+        <div class="container">
+            <h2 class="section-title">
+                <span class="title-icon"><i class="fas fa-envelope"></i></span>
+                联系方式
+            </h2>
+            <div class="contact-content">
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <i class="fas fa-envelope"></i>
+                        <div>
+                            <h4>电子邮箱</h4>
+                            <p><a href="mailto:haixuhe@example.com" id="contactEmail">haixuhe@example.com</a></p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <div>
+                            <h4>通讯地址</h4>
+                            <p id="contactAddress">XX省XX市XX区XX路XX号<br>XX大学 遥感信息工程学院</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="contact-links">
+                    <h3>学术主页</h3>
+                    <div class="link-grid">
+                        <a href="#" class="link-card" id="contactGoogleScholar">
+                            <i class="fas fa-graduation-cap"></i>
+                            <span>Google Scholar</span>
+                        </a>
+                        <a href="#" class="link-card" id="contactResearchGate">
+                            <i class="fab fa-researchgate"></i>
+                            <span>ResearchGate</span>
+                        </a>
+                        <a href="#" class="link-card" id="contactOrcid">
+                            <i class="fas fa-id-badge"></i>
+                            <span>ORCID</span>
+                        </a>
+                        <a href="#" class="link-card" id="contactGithub">
+                            <i class="fab fa-github"></i>
+                            <span>GitHub</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <p class="footer-text" id="footerText">
+                    &copy; 2024 何海旭 | 遥感科学与技术
+                </p>
+                <p class="footer-quote">
+                    "从太空看地球，用数据解世界"
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <button class="back-to-top" id="backToTop" aria-label="返回顶部">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <script src="script.js"></script>
+</body>
+</html>

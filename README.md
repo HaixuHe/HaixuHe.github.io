@@ -1,6 +1,6 @@
 # 个人学术主页
 
-一个基于GitHub Pages的遥感博士生个人学术主页，支持在线管理论文、专利、项目等学术成果。
+一个基于GitHub Pages的遥感博士生个人学术主页，支持在线管理论文、专利、项目等学术成果，并自动更新论文引用量。
 
 ## 📁 项目结构
 
@@ -13,7 +13,10 @@ HaixuHe.github.io/
 ├── admin.html              # 数据管理后台
 ├── admin-style.css         # 管理后台样式
 ├── admin-script.js         # 管理后台脚本（GitHub API集成）
-└── README.md               # 项目文档
+├── update_citations.py     # 自动更新论文引用量脚本
+├── README.md               # 项目文档
+└── .github/workflows/
+    └── update_citations.yml # GitHub Actions工作流（每日自动更新引用量）
 ```
 
 ## ✨ 功能特性
@@ -22,6 +25,10 @@ HaixuHe.github.io/
 - 🎨 **现代化设计** - 遥感主题配色，响应式布局
 - 📊 **动态数据加载** - 从JSON文件动态加载所有内容
 - 🔍 **论文筛选** - 支持按类型（期刊/会议）筛选论文
+- 📄 **论文摘要** - 支持展开/收起查看论文摘要
+- 📈 **引用量显示** - 自动显示每篇论文的引用次数
+- 🧮 **自动统计** - 论文、专利、项目数量自动计算
+- 👻 **智能隐藏** - 专利/项目数量为0时自动隐藏对应板块
 - 📱 **响应式设计** - 完美适配桌面、平板、手机
 - ✨ **动画效果** - 平滑滚动、淡入动画、数字统计动画
 - 🔗 **社交链接** - Google Scholar、ResearchGate、GitHub、LinkedIn、ORCID
@@ -32,6 +39,12 @@ HaixuHe.github.io/
 - 🧪 **连接测试** - 验证Token和仓库配置
 - 👁️ **数据预览** - JSON格式预览和复制
 - 💾 **一键保存** - 自动提交到GitHub仓库
+- 🔄 **引用更新** - 手动触发GitHub Actions更新论文引用量
+
+### 自动化功能
+- 🤖 **每日自动更新** - GitHub Actions每天自动查询OpenAlex API更新论文引用量
+- 🔄 **手动触发更新** - 在管理后台可手动触发引用量更新
+- 📊 **OpenAlex集成** - 通过DOI自动获取论文引用数据
 
 ## 🚀 快速开始
 
@@ -80,6 +93,19 @@ git push origin main
 3. 点击右上角 "保存到GitHub"
 4. 刷新主页查看效果
 
+### 4. 配置自动引用更新
+
+自动引用更新功能已内置，无需额外配置。系统会：
+- 每天凌晨自动运行 `update_citations.py` 脚本
+- 通过OpenAlex API查询每篇论文的DOI获取引用量
+- 自动更新 `data.json` 并提交到GitHub
+
+**手动触发更新**：
+1. 打开 `admin.html`
+2. 进入"论文发表"板块
+3. 点击"更新引用量"按钮
+4. 等待几分钟，系统会自动更新所有论文的引用量
+
 ## 📊 数据结构
 
 ### data.json 结构
@@ -93,7 +119,6 @@ git push origin main
     "description": "个人简介",
     "email": "email@example.com",
     "address": "通讯地址",
-    "office": "办公室",
     "university": "所在大学",
     "department": "院系",
     "lab": "实验室",
@@ -115,9 +140,6 @@ git push origin main
     }
   },
   "stats": {
-    "publications": 15,
-    "patents": 8,
-    "projects": 10,
     "citations": 500
   },
   "publications": [
@@ -131,6 +153,8 @@ git push origin main
       "doi": "https://doi.org/...",
       "pdf": "https://...",
       "code": "https://github.com/...",
+      "abstract": "论文摘要内容",
+      "citations": 10,
       "highlight": true
     }
   ],
@@ -298,53 +322,41 @@ const response = await fetch(
 - 使用VS Code Live Server插件
 - 使用Python: `python -m http.server 8000`
 
-## 📚 技术栈
+### 6. 引用量不更新或显示为0
 
-- **前端框架**: 原生JavaScript (Vanilla JS)
-- **样式**: CSS3 + CSS变量
-- **数据存储**: JSON文件
-- **API**: GitHub REST API v3
-- **字体**: Google Fonts (Noto Sans SC, Roboto)
-- **图标**: Font Awesome 6.4.0
-- **部署**: GitHub Pages
+**解决方案**：
+- 检查论文是否有正确的DOI
+- 确认DOI格式正确（如 `https://doi.org/10.xxxx/xxxxx`）
+- 手动触发更新：在admin.html点击"更新引用量"
+- 等待GitHub Actions自动运行（每天凌晨）
+- 检查OpenAlex API是否包含该论文
 
-## 🔐 安全说明
+### 7. 专利/项目板块不显示
 
-- **Token存储**: 保存在浏览器localStorage，仅本地可访问
-- **Token权限**: 仅需要 `repo` 权限，建议定期更换
-- **数据安全**: 所有数据公开存储在GitHub仓库
-- **建议**: 
-  - 不要在公共电脑上保存Token
-  - 定期更换Token
-  - 不要提交Token到代码仓库
+**原因**：这是设计特性，当数量为0时自动隐藏
+
+**解决方案**：
+- 在管理后台添加专利或项目数据
+- 保存后板块会自动显示
+
+## 📚 相关链接
+
+- [GitHub Pages](https://pages.github.com/)
+- [GitHub API文档](https://docs.github.com/en/rest)
+- [OpenAlex API](https://docs.openalex.org/)
+- [Font Awesome图标](https://fontawesome.com/icons)
 
 ## 📝 更新日志
 
-### v1.0.0 (2024-01)
-- ✅ 初始版本发布
-- ✅ 主页框架设计
-- ✅ JSON数据存储
-- ✅ 管理后台开发
-- ✅ GitHub API集成
-- ✅ 测试连接功能
-- ✅ 响应式设计
-
-## 🤝 贡献指南
-
-欢迎提交Issue和Pull Request！
-
-## 📄 许可证
-
-MIT License
-
-## 📧 联系方式
-
-如有问题，请通过以下方式联系：
-- GitHub Issues: [提交问题](https://github.com/HaixuHe/HaixuHe.github.io/issues)
-- Email: haixuhe@example.com
+### 2024-03
+- ✨ 新增论文引用量自动更新功能
+- ✨ 新增论文摘要展开/收起功能
+- ✨ 新增专利/项目数量为0时自动隐藏功能
+- ✨ 新增手动触发引用更新按钮
+- 🎨 优化页面样式和交互体验
 
 ---
 
-**最后更新**: 2024年
-**作者**: 贺海旭
-**主题**: 遥感科学与技术
+**作者**: 贺海旭  
+**邮箱**: 20161001925@cug.edu.cn  
+**GitHub**: https://github.com/HaixuHe

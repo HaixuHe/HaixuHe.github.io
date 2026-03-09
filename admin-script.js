@@ -29,6 +29,7 @@ document.addEventListener('DOMContentLoaded', function() {
     window.saveToGitHub = saveToGitHub;
     window.showToast = showToast;
     window.updateCitations = updateCitations;
+    window.hideEmptySections = hideEmptySections;
 });
 
 function initializeNavigation() {
@@ -170,9 +171,31 @@ async function loadData() {
         populatePublications();
         populatePatents();
         populateProjects();
+        
+        hideEmptySections();
     } catch (error) {
         console.error('加载数据失败:', error);
         showToast('加载数据失败: ' + error.message, 'error');
+    }
+}
+
+function hideEmptySections() {
+    const patentCount = (data.patents || []).length;
+    const projectCount = (data.projects || []).length;
+    
+    const patentNavItem = document.querySelector('.nav-item[data-section="patents"]');
+    const patentSection = document.getElementById('patents');
+    const projectNavItem = document.querySelector('.nav-item[data-section="projects"]');
+    const projectSection = document.getElementById('projects');
+    
+    if (patentCount === 0 && patentNavItem && patentSection) {
+        patentNavItem.style.display = 'none';
+        patentSection.style.display = 'none';
+    }
+    
+    if (projectCount === 0 && projectNavItem && projectSection) {
+        projectNavItem.style.display = 'none';
+        projectSection.style.display = 'none';
     }
 }
 

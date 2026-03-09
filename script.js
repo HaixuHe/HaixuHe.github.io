@@ -70,6 +70,25 @@ function populatePage() {
     renderProjects();
     updateContactInfo(profile);
     updateFooter(profile);
+    
+    toggleSection('patents', (siteData.patents || []).length > 0);
+    toggleSection('projects', (siteData.projects || []).length > 0);
+    toggleNavLink('patents', (siteData.patents || []).length > 0);
+    toggleNavLink('projects', (siteData.projects || []).length > 0);
+}
+
+function toggleSection(sectionId, show) {
+    const section = document.getElementById(sectionId);
+    if (section) {
+        section.style.display = show ? 'block' : 'none';
+    }
+}
+
+function toggleNavLink(sectionId, show) {
+    const navLink = document.getElementById(`nav${sectionId.charAt(0).toUpperCase() + sectionId.slice(1)}`);
+    if (navLink) {
+        navLink.parentElement.style.display = show ? 'block' : 'none';
+    }
 }
 
 function calculateStats() {

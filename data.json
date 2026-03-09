@@ -127,16 +127,6 @@
       "citations": 67
     }
   ],
-  "patents": [
-    {
-      "id": "pat972433",
-      "title": "",
-      "patentNumber": "",
-      "status": "pending",
-      "statusText": "审查中",
-      "inventors": [],
-      "year": "2026"
-    }
-  ],
+  "patents": [],
   "projects": []
 }

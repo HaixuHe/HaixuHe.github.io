@@ -203,19 +203,16 @@ function renderProjects() {
     if (!container || !siteData.projects) return;
 
     container.innerHTML = siteData.projects.map(project => `
-        <div class="project-item">
-            <div class="project-marker"></div>
-            <div class="project-card">
-                <div class="project-header">
-                    <span class="project-time">${project.time}</span>
-                    <span class="project-role">${project.role}</span>
-                </div>
-                <h3 class="project-title">${project.title}</h3>
-                <p class="project-subtitle">${project.subtitle}</p>
-                <p class="project-description">${project.description}</p>
-                <div class="project-tags">
-                    ${(project.tags || []).map(tag => `<span class="tag">${tag}</span>`).join('')}
-                </div>
+        <div class="project-card">
+            <div class="project-header">
+                <span class="project-time">${project.time}</span>
+                <span class="project-role">${project.role}</span>
+            </div>
+            <h3 class="project-title">${project.title}</h3>
+            <p class="project-subtitle">${project.subtitle}</p>
+            <p class="project-description">${project.description}</p>
+            <div class="project-tags">
+                ${(project.tags || []).map(tag => `<span class="tag">${tag}</span>`).join('')}
             </div>
         </div>
     `).join('');
@@ -225,11 +222,14 @@ function updateContactInfo(profile) {
     if (profile.email) {
         const emailLink = document.getElementById('contactEmail');
         emailLink.href = `mailto:${profile.email}`;
-        emailLink.textContent = profile.email;
+        const emailSpan = emailLink.querySelector('span');
+        if (emailSpan) emailSpan.textContent = profile.email;
     }
 
     if (profile.address) {
-        document.getElementById('contactAddress').innerHTML = profile.address;
+        const addressEl = document.getElementById('contactAddress');
+        const addressSpan = addressEl.querySelector('span');
+        if (addressSpan) addressSpan.innerHTML = profile.address;
     }
 
     if (profile.socialLinks) {

@@ -126,21 +126,17 @@ function renderPublications() {
                     <i class="fas ${pub.type === 'journal' ? 'fa-book' : 'fa-calendar-alt'}"></i> ${pub.journal}
                     ${pub.citations !== undefined ? `<span class="pub-citations"><i class="fas fa-quote-right"></i> ${pub.citations} 次引用</span>` : ''}
                 </p>
-                ${pub.abstract ? `
-                <div class="pub-abstract-section">
-                    <button class="pub-abstract-toggle" onclick="toggleAbstract(${index})">
-                        <i class="fas fa-chevron-down"></i> 查看摘要
-                    </button>
-                    <div class="pub-abstract" id="abstract-${index}" style="display: none;">
-                        <p>${pub.abstract}</p>
-                    </div>
-                </div>
-                ` : ''}
-                <div class="pub-links">
+                <div class="pub-actions">
+                    ${pub.abstract ? `<button class="pub-abstract-toggle" onclick="toggleAbstract(${index})"><i class="fas fa-chevron-down"></i> 摘要</button>` : ''}
                     ${pub.doi ? `<a href="${pub.doi}" class="pub-link" target="_blank"><i class="fas fa-external-link-alt"></i> DOI</a>` : ''}
                     ${pub.pdf ? `<a href="${pub.pdf}" class="pub-link" target="_blank"><i class="fas fa-file-pdf"></i> PDF</a>` : ''}
                     ${pub.code ? `<a href="${pub.code}" class="pub-link" target="_blank"><i class="fas fa-code"></i> Code</a>` : ''}
                 </div>
+                ${pub.abstract ? `
+                <div class="pub-abstract" id="abstract-${index}" style="display: none;">
+                    <p>${pub.abstract}</p>
+                </div>
+                ` : ''}
             </div>
         </div>
     `).join('');

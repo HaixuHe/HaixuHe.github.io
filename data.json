@@ -82,7 +82,7 @@
       "code": "https://github.com/HaixuHe/HTR-BTTF",
       "highlight": false,
       "abstract": "Land surface temperature (LST) is widely used in the ﬁeld of time-series remote sensing. However, due to the inﬂuence of cloud cover, the large area of LST data observation is missing, which seriously affects the later data analysis. In the past research, various effective interpolation methods have been developed, but they usually cannot effectively interpolate the image data with large observation missing. In this article, a new method for interpolating these missing data called Hilbert tensor rearrangement with Bayesian temporal tensor factorization (HTR-BTTF) is proposed. This method requires tensor rearrangement of remote sensing data, combined with BTTF method for interpolation. In order to evaluate the performance of our method, we select three real study areas with different climates, Wuhan, Harbin, and Kunming LST data during day and night, and add cloud covers with different sizes to the cold and warm season layers each year. BTTF, inverse distance weighted (IDW), harmonic analysis of time series (HANTS), and GapFill are used as comparison methods. Root-meansquare error (RMSE) is a comprehensive evaluation index of interpolation results. Experiments have shown that HTR-BTTF is an effective method for interpolating missing observations, which is better than other methods. In the simulation experiment of the largest cloud cover size, on average, the RMSE of the data ﬁlled using the HTR-BTTF method was 17.2% lower than that of BTTF and 54.9% lower than that of the GapFill method, and it shows good robustness and high accuracy.",
-      "citations": 7
+      "citations": 8
     },
     {
       "id": "pub228012",

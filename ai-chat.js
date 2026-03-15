@@ -2,6 +2,7 @@
 (function () {
     const SF_BASE = 'https://api.siliconflow.cn/v1';
     const SF_MODEL = 'Pro/deepseek-ai/DeepSeek-V3.2';
+    const FOLLOW_UP_MARKER = '\n\n<<<FOLLOW_UP_PROMPTS>>>\n';
     const DEFAULT_PROMPTS = [
         '请先用第一人称简单介绍一下你自己和目前的研究方向。',
         '你最有代表性的论文有哪些？分别解决了什么问题？',
@@ -63,14 +64,19 @@
         const data = state.siteData;
         const name = data?.profile?.name || '贺海旭';
         const nameEn = data?.profile?.nameEn || 'Haixu He';
+        let basePrompt = '';
 
         if (!data) {
-            return `你现在扮演 ${name}（${nameEn}）本人，请用中文回答用户的问题。`;
+            basePrompt = `你现在扮演 ${name}（${nameEn}）本人，请用中文回答用户的问题。`;
+            return `${basePrompt}\n\n${buildFollowUpPromptProtocol()}`;
         }
 
-        if (data.ai?.systemPrompt) return data.ai.systemPrompt;
+        if (data.ai?.systemPrompt) {
+            basePrompt = data.ai.systemPrompt;
+            return `${basePrompt}\n\n${buildFollowUpPromptProtocol()}`;
+        }
 
-        return `你现在扮演 ${name}（${nameEn}）本人。以下是你的完整个人信息（JSON格式），请严格基于这些信息，以第一人称"我"与用户交流，语气自然、亲切、专业。
+        basePrompt = `你现在扮演 ${name}（${nameEn}）本人。以下是你的完整个人信息（JSON格式），请严格基于这些信息，以第一人称"我"与用户交流，语气自然、亲切、专业。
 
 \`\`\`json
 ${JSON.stringify(data, null, 2)}
@@ -83,6 +89,19 @@ ${JSON.stringify(data, null, 2)}
 - 严格基于上述数据回答，不编造任何信息
 - 若被问到数据中没有的内容，可以说"这方面我暂时不便透露"或"你可以通过邮件联系我了解更多"
 - 对于论文，可主动提供标题、期刊、DOI、代码链接等详细信息`;
+
+        return `${basePrompt}\n\n${buildFollowUpPromptProtocol()}`;
+    }
+
+    function buildFollowUpPromptProtocol() {
+        return `每次回答都必须遵循以下输出协议：
+- 先正常回答用户问题，回答部分保持自然，不要提及任何格式协议
+- 在回答正文末尾，紧跟着单独输出以下标记：${FOLLOW_UP_MARKER.trim()}
+- 在该标记下一行只输出一个 JSON 数组，固定包含 3 条中文提问，例如 ["问题1","问题2","问题3"]
+- 这 3 条提问必须围绕我的个人成果展开，重点关注研究方向、代表论文、专利、方法创新、应用价值、开源代码或合作交流
+- 不要编造数据中没有的信息，不要离题，不要夸张，不要太离谱
+- 每条问题控制在 12 到 28 个字之间，适合网页用户直接点击继续提问
+- 标记和 JSON 数组后的内容不要再补充任何解释；该部分只给前端程序读取，不展示给用户`;
     }
 
     /* ── Send message ────────────────────────────────── */
@@ -142,6 +161,7 @@ ${JSON.stringify(data, null, 2)}
             const bubble = document.querySelector(`#${replyId} .ai-bubble`);
             const msgBox = document.getElementById('aiChatMessages');
             let fullText = '';
+            const fallbackPrompts = buildAchievementFallbackPrompts(text);
 
             const reader = res.body.getReader();
             const decoder = new TextDecoder();
@@ -158,14 +178,18 @@ ${JSON.stringify(data, null, 2)}
                         const parsed = JSON.parse(raw);
                         const delta = parsed.choices?.[0]?.delta?.content || '';
                         fullText += delta;
-                        bubble.innerHTML = formatMd(fullText);
+                        const assistantPayload = extractAssistantPayload(fullText);
+                        bubble.innerHTML = formatMd(assistantPayload.answerText || '');
                         msgBox.scrollTop = msgBox.scrollHeight;
                     } catch (_) {}
                 }
             }
 
-            state.messages.push({ role: 'assistant', content: fullText });
-            refreshSuggestedPrompts(text, fullText, promptVersion);
+            const finalPayload = extractAssistantPayload(fullText);
+            const assistantText = finalPayload.answerText.trim();
+            bubble.innerHTML = formatMd(assistantText);
+            state.messages.push({ role: 'assistant', content: assistantText });
+            restorePromptList(promptVersion, finalPayload.prompts.length ? finalPayload.prompts : fallbackPrompts);
         } catch (e) {
             removeMsg(thinkId);
             appendAiMsg(`请求失败：${escHtml(e.message)}`, 'error');
@@ -239,81 +263,35 @@ ${JSON.stringify(data, null, 2)}
         sendMessage(button.dataset.prompt || '');
     }
 
-    async function refreshSuggestedPrompts(userText, assistantText, promptVersion) {
-        try {
-            const prompts = await requestSuggestedPrompts(userText, assistantText);
-            restorePromptList(promptVersion, prompts);
-        } catch (_) {
-            restorePromptList(promptVersion, buildAchievementFallbackPrompts(userText));
+    function extractAssistantPayload(rawText) {
+        const content = String(rawText || '');
+        const markerIndex = content.indexOf(FOLLOW_UP_MARKER);
+        if (markerIndex >= 0) {
+            return {
+                answerText: content.slice(0, markerIndex).trimEnd(),
+                prompts: normalizePromptSuggestions(content.slice(markerIndex + FOLLOW_UP_MARKER.length), [])
+            };
         }
-    }
 
-    async function requestSuggestedPrompts(userText, assistantText) {
-        if (!getApiKey()) return buildAchievementFallbackPrompts(userText);
-
-        const summary = buildPromptContextSummary();
-        const payload = {
-            model: SF_MODEL,
-            messages: [
-                {
-                    role: 'system',
-                    content: '你是学术主页的对话引导助手。你的任务是为访客生成 3 条下一步可点击提问，帮助访客继续了解主页主人的个人成果。'
-                },
-                {
-                    role: 'user',
-                    content: `请基于以下资料，生成 3 条中文 follow-up 提问，供网页上的快捷按钮使用。\n\n要求：\n- 必须围绕主页主人的个人成果展开，重点关注研究方向、代表论文、专利、方法创新、应用价值、开源代码或合作交流\n- 不要提问资料中没有明确提到的奖项、头衔、单位经历或私人信息\n- 问句要自然、具体、不过分夸张，不要太离谱\n- 每条尽量控制在 12 到 28 个字之间\n- 三条问题不要重复，且都要适合用户直接点击提问\n- 只输出 JSON 数组，例如 ["问题1","问题2","问题3"]，不要输出 Markdown，不要解释\n\n主页资料摘要：\n${summary}\n\n最近用户问题：${userText}\n最近助手回答：${assistantText.slice(0, 700)}`
-                }
-            ],
-            enable_thinking: false,
-            max_tokens: 256,
-            temperature: 0.5
+        return {
+            answerText: stripPendingMarkerSuffix(content),
+            prompts: []
         };
-
-        const res = await fetch(`${SF_BASE}/chat/completions`, {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${getApiKey()}`,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(payload)
-        });
-
-        if (!res.ok) {
-            const err = await res.json().catch(() => ({}));
-            throw new Error(err.error?.message || `HTTP ${res.status}`);
-        }
-
-        const data = await res.json();
-        const content = data.choices?.[0]?.message?.content || '';
-        return normalizePromptSuggestions(content, buildAchievementFallbackPrompts(userText));
     }
 
-    function buildPromptContextSummary() {
-        const profile = state.siteData?.profile || {};
-        const publications = Array.isArray(state.siteData?.publications) ? state.siteData.publications : [];
-        const patents = Array.isArray(state.siteData?.patents) ? state.siteData.patents : [];
+    function stripPendingMarkerSuffix(text) {
+        const pendingLength = getPendingMarkerLength(text);
+        return pendingLength > 0 ? text.slice(0, -pendingLength) : text;
+    }
 
-        const keyPublications = [...publications]
-            .sort((a, b) => {
-                const citationGap = Number(b.citations || 0) - Number(a.citations || 0);
-                if (citationGap !== 0) return citationGap;
-                return Number(b.year || 0) - Number(a.year || 0);
-            })
-            .slice(0, 3)
-            .map(pub => `${pub.year}｜${pub.title}｜${pub.journal}｜被引${pub.citations || 0}次${pub.code ? '｜含代码' : ''}`);
-
-        const grantedPatents = patents
-            .filter(patent => patent.status === 'granted')
-            .slice(0, 2)
-            .map(patent => `${patent.year}｜${patent.title}｜${patent.patentNumber}`);
-
-        return [
-            `姓名：${profile.name || '贺海旭'}（${profile.nameEn || 'Haixu He'}）`,
-            `身份：${profile.title || ''}`,
-            `研究方向：${(profile.researchInterests || []).join('、')}`,
-            `代表论文：${keyPublications.join('；')}`,
-            `已授权专利：${grantedPatents.join('；') || '暂无'}`
-        ].join('\n');
+    function getPendingMarkerLength(text) {
+        const maxLength = Math.min(text.length, FOLLOW_UP_MARKER.length - 1);
+        for (let length = maxLength; length > 0; length -= 1) {
+            if (text.endsWith(FOLLOW_UP_MARKER.slice(0, length))) {
+                return length;
+            }
+        }
+        return 0;
     }
 
     function buildAchievementFallbackPrompts(userText) {

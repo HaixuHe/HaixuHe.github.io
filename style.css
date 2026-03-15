@@ -870,6 +870,17 @@ body {
     align-items: center;
     gap: 6px;
     z-index: 1002;
+    /* shown state */
+    opacity: 1;
+    transform: scale(1) translateY(0);
+    transition: opacity 0.3s ease, transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: auto;
+}
+
+.ai-chat-btn-wrap.panel-open {
+    opacity: 0;
+    transform: scale(0.7) translateY(10px);
+    pointer-events: none;
 }
 
 .ai-chat-label {
@@ -918,19 +929,19 @@ body {
     border-radius: 50%;
     border: 2px solid rgba(45, 142, 176, 0.55);
     inset: -8px;
-    animation: btnRingPulse 1.5s ease-in-out infinite;
+    animation: btnRingPulse 1.0s ease-out infinite;
     pointer-events: none;
 }
 .ai-chat-btn::after {
     inset: -16px;
     border-color: rgba(45, 142, 176, 0.25);
-    animation-delay: 0.38s;
+    animation-delay: 0.25s;
 }
 
 @keyframes btnRingPulse {
     0%   { transform: scale(1);    opacity: 0.85; }
-    55%  { transform: scale(1.07); opacity: 0; }
-    100% { transform: scale(1.07); opacity: 0; }
+    50%  { transform: scale(1.08); opacity: 0; }
+    100% { transform: scale(1.08); opacity: 0; }
 }
 
 .ai-chat-btn img {

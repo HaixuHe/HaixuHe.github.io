@@ -52,6 +52,7 @@
         state.open = !state.open;
         document.getElementById('aiChatPanel').classList.toggle('open', state.open);
         document.getElementById('aiOverlay').classList.toggle('active', state.open);
+        document.getElementById('aiChatBtnWrap').classList.toggle('panel-open', state.open);
         if (state.open) document.getElementById('aiChatInput').focus();
     }
 

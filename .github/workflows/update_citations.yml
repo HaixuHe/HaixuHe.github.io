@@ -28,6 +28,8 @@ jobs:
       - name: Update citations
         run: |
           python update_citations.py
+        env:
+          S2_API_KEY: ${{ secrets.S2_API_KEY }}
       
       - name: Check for changes
         id: check_changes

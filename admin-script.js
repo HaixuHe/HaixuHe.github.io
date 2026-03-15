@@ -1140,7 +1140,7 @@ async function updateCitations() {
         return;
     }
 
-    if (!confirm('确定要更新所有论文的引用量吗？\n\n这将触发GitHub Actions自动更新引用数据，可能需要几分钟时间完成。')) {
+    if (!confirm('确定要更新所有论文的引用量吗？\n\n将优先使用 Semantic Scholar API，如未找到则回退到 OpenAlex。\n\n这将触发GitHub Actions自动更新引用数据，可能需要几分钟时间完成。')) {
         return;
     }
 

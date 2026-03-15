@@ -170,6 +170,13 @@
                             <i class="fas fa-sync-alt"></i> 更新引用量
                         </button>
                     </div>
+                    <div class="alert alert-info" style="margin-bottom: 16px; font-size: 0.88rem;">
+                        <i class="fas fa-info-circle"></i>
+                        <div>
+                            <p><strong>引用量更新说明：</strong>优先使用 <strong>Semantic Scholar API</strong>，未找到时自动回退到 OpenAlex。</p>
+                            <p>需在 GitHub → 仓库 Settings → Secrets and variables → Actions 中新建 Secret：<code style="background:#e8f0fe;padding:1px 5px;border-radius:3px;">S2_API_KEY</code>，值为您的 Semantic Scholar API Key。</p>
+                        </div>
+                    </div>
                     <div id="publicationsList" class="items-list"></div>
                 </section>
 

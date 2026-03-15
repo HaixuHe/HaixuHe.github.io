@@ -154,6 +154,63 @@
         <i class="fas fa-arrow-up"></i>
     </button>
 
+    <!-- AI Chat Assistant -->
+    <button class="ai-chat-btn" id="aiChatBtn" title="AI 助手" aria-label="打开AI助手">
+        <i class="fas fa-robot"></i>
+    </button>
+
+    <div class="ai-chat-panel" id="aiChatPanel" role="dialog" aria-label="AI助手">
+        <div class="ai-chat-header">
+            <div class="ai-chat-title">
+                <i class="fas fa-robot"></i>
+                <span>AI 助手</span>
+            </div>
+            <div class="ai-header-actions">
+                <button class="ai-icon-btn" id="aiSettingsBtn" title="API 设置">
+                    <i class="fas fa-key"></i>
+                </button>
+                <button class="ai-icon-btn" id="aiClearBtn" title="清空对话">
+                    <i class="fas fa-trash-alt"></i>
+                </button>
+                <button class="ai-icon-btn" id="aiCloseBtn" title="关闭">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="ai-settings-area" id="aiSettingsArea">
+            <div class="ai-settings-row">
+                <input type="password" id="sfApiKey" class="ai-settings-input"
+                       placeholder="硅基流动 API Key（sk-...）" autocomplete="off">
+            </div>
+            <div class="ai-settings-row">
+                <select id="sfModel" class="ai-settings-select">
+                    <option value="deepseek-ai/DeepSeek-V3">DeepSeek V3</option>
+                    <option value="deepseek-ai/DeepSeek-R1">DeepSeek R1</option>
+                    <option value="Qwen/Qwen2.5-72B-Instruct">Qwen2.5 72B</option>
+                    <option value="Qwen/Qwen2.5-7B-Instruct">Qwen2.5 7B</option>
+                    <option value="THUDM/glm-4-9b-chat">GLM-4 9B</option>
+                </select>
+                <button class="ai-settings-save" id="aiSaveSettings">保存</button>
+            </div>
+        </div>
+
+        <div class="ai-chat-messages" id="aiChatMessages">
+            <div class="ai-chat-msg ai-msg">
+                <div class="ai-avatar"><i class="fas fa-robot"></i></div>
+                <div class="ai-bubble">你好！我是主页 AI 助手，可以回答关于论文、研究方向等问题。试试问：「有哪些论文？」</div>
+            </div>
+        </div>
+
+        <div class="ai-chat-input-area">
+            <textarea id="aiChatInput" placeholder="输入问题，Enter 发送…" rows="1"></textarea>
+            <button class="ai-send-btn" id="aiSendBtn" title="发送">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
+
     <script src="script.js"></script>
+    <script src="ai-chat.js"></script>
 </body>
 </html>

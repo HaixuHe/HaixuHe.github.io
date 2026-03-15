@@ -1037,6 +1037,10 @@ body {
     background: white;
 }
 
+.ai-prompt-list.is-hidden {
+    display: none;
+}
+
 .ai-prompt-chip {
     border: none;
     border-radius: 999px;

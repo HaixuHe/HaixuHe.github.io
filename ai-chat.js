@@ -12,7 +12,8 @@
         open: false,
         messages: [],   // conversation history (excluding system prompt)
         siteData: null,
-        msgCounter: 0
+        msgCounter: 0,
+        promptVersion: 0
     };
 
     function getApiKey() { return state.siteData?.ai?.apiKey || ''; }
@@ -86,9 +87,11 @@ ${JSON.stringify(data, null, 2)}
 
     /* ── Send message ────────────────────────────────── */
 
-    async function sendMessage() {
+    async function sendMessage(prefilledText) {
         const input = document.getElementById('aiChatInput');
-        const text = input.value.trim();
+        const text = typeof prefilledText === 'string'
+            ? prefilledText.trim()
+            : input.value.trim();
         if (!text) return;
 
         if (!getApiKey()) {
@@ -96,8 +99,9 @@ ${JSON.stringify(data, null, 2)}
             return;
         }
 
+        const promptVersion = hidePromptList();
         input.value = '';
-        input.style.height = 'auto';
+        autoResize();
         appendUserMsg(text);
         state.messages.push({ role: 'user', content: text });
 
@@ -161,10 +165,12 @@ ${JSON.stringify(data, null, 2)}
             }
 
             state.messages.push({ role: 'assistant', content: fullText });
+            refreshSuggestedPrompts(text, fullText, promptVersion);
         } catch (e) {
             removeMsg(thinkId);
             appendAiMsg(`请求失败：${escHtml(e.message)}`, 'error');
             state.messages.pop();
+            restorePromptList(promptVersion, buildAchievementFallbackPrompts(text));
         } finally {
             document.getElementById('aiSendBtn').disabled = false;
         }
@@ -174,7 +180,8 @@ ${JSON.stringify(data, null, 2)}
 
     function hydrateChatUi() {
         document.getElementById('aiChatMessages').innerHTML = welcomeHtml();
-        renderQuickPrompts();
+        state.promptVersion += 1;
+        renderPromptList(getQuickPrompts());
     }
 
     function getQuickPrompts() {
@@ -189,29 +196,212 @@ ${JSON.stringify(data, null, 2)}
     }
 
     function renderQuickPrompts() {
+        renderPromptList(getQuickPrompts());
+    }
+
+    function renderPromptList(prompts) {
         const list = document.getElementById('aiPromptList');
         if (!list) return;
 
         list.innerHTML = '';
-        getQuickPrompts().forEach(prompt => {
+        list.classList.remove('is-hidden');
+
+        prompts.forEach(prompt => {
             const button = document.createElement('button');
             button.type = 'button';
             button.className = 'ai-prompt-chip';
             button.dataset.prompt = prompt;
-            button.title = '点击填入输入框';
+            button.title = '点击直接发送';
             button.textContent = prompt;
             list.appendChild(button);
         });
+    }
+
+    function hidePromptList() {
+        const list = document.getElementById('aiPromptList');
+        state.promptVersion += 1;
+        if (list) {
+            list.classList.add('is-hidden');
+            list.innerHTML = '';
+        }
+        return state.promptVersion;
+    }
+
+    function restorePromptList(promptVersion, prompts) {
+        if (promptVersion !== state.promptVersion) return;
+        renderPromptList(prompts);
     }
 
     function handlePromptPresetClick(event) {
         const button = event.target.closest('.ai-prompt-chip');
         if (!button) return;
 
-        const input = document.getElementById('aiChatInput');
-        input.value = button.dataset.prompt || '';
-        autoResize();
-        input.focus();
+        sendMessage(button.dataset.prompt || '');
+    }
+
+    async function refreshSuggestedPrompts(userText, assistantText, promptVersion) {
+        try {
+            const prompts = await requestSuggestedPrompts(userText, assistantText);
+            restorePromptList(promptVersion, prompts);
+        } catch (_) {
+            restorePromptList(promptVersion, buildAchievementFallbackPrompts(userText));
+        }
+    }
+
+    async function requestSuggestedPrompts(userText, assistantText) {
+        if (!getApiKey()) return buildAchievementFallbackPrompts(userText);
+
+        const summary = buildPromptContextSummary();
+        const payload = {
+            model: SF_MODEL,
+            messages: [
+                {
+                    role: 'system',
+                    content: '你是学术主页的对话引导助手。你的任务是为访客生成 3 条下一步可点击提问，帮助访客继续了解主页主人的个人成果。'
+                },
+                {
+                    role: 'user',
+                    content: `请基于以下资料，生成 3 条中文 follow-up 提问，供网页上的快捷按钮使用。\n\n要求：\n- 必须围绕主页主人的个人成果展开，重点关注研究方向、代表论文、专利、方法创新、应用价值、开源代码或合作交流\n- 不要提问资料中没有明确提到的奖项、头衔、单位经历或私人信息\n- 问句要自然、具体、不过分夸张，不要太离谱\n- 每条尽量控制在 12 到 28 个字之间\n- 三条问题不要重复，且都要适合用户直接点击提问\n- 只输出 JSON 数组，例如 ["问题1","问题2","问题3"]，不要输出 Markdown，不要解释\n\n主页资料摘要：\n${summary}\n\n最近用户问题：${userText}\n最近助手回答：${assistantText.slice(0, 700)}`
+                }
+            ],
+            enable_thinking: false,
+            max_tokens: 256,
+            temperature: 0.5
+        };
+
+        const res = await fetch(`${SF_BASE}/chat/completions`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${getApiKey()}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+        });
+
+        if (!res.ok) {
+            const err = await res.json().catch(() => ({}));
+            throw new Error(err.error?.message || `HTTP ${res.status}`);
+        }
+
+        const data = await res.json();
+        const content = data.choices?.[0]?.message?.content || '';
+        return normalizePromptSuggestions(content, buildAchievementFallbackPrompts(userText));
+    }
+
+    function buildPromptContextSummary() {
+        const profile = state.siteData?.profile || {};
+        const publications = Array.isArray(state.siteData?.publications) ? state.siteData.publications : [];
+        const patents = Array.isArray(state.siteData?.patents) ? state.siteData.patents : [];
+
+        const keyPublications = [...publications]
+            .sort((a, b) => {
+                const citationGap = Number(b.citations || 0) - Number(a.citations || 0);
+                if (citationGap !== 0) return citationGap;
+                return Number(b.year || 0) - Number(a.year || 0);
+            })
+            .slice(0, 3)
+            .map(pub => `${pub.year}｜${pub.title}｜${pub.journal}｜被引${pub.citations || 0}次${pub.code ? '｜含代码' : ''}`);
+
+        const grantedPatents = patents
+            .filter(patent => patent.status === 'granted')
+            .slice(0, 2)
+            .map(patent => `${patent.year}｜${patent.title}｜${patent.patentNumber}`);
+
+        return [
+            `姓名：${profile.name || '贺海旭'}（${profile.nameEn || 'Haixu He'}）`,
+            `身份：${profile.title || ''}`,
+            `研究方向：${(profile.researchInterests || []).join('、')}`,
+            `代表论文：${keyPublications.join('；')}`,
+            `已授权专利：${grantedPatents.join('；') || '暂无'}`
+        ].join('\n');
+    }
+
+    function buildAchievementFallbackPrompts(userText) {
+        const publications = Array.isArray(state.siteData?.publications) ? state.siteData.publications : [];
+        const patents = Array.isArray(state.siteData?.patents) ? state.siteData.patents : [];
+        const promptPool = [];
+        const lowerUserText = String(userText || '').toLowerCase();
+        const hasCodePublication = publications.some(pub => pub.code);
+        const hasPatents = patents.some(patent => patent.status === 'granted');
+        const hasRsePaper = publications.some(pub => /Remote Sensing of Environment/i.test(pub.journal || ''));
+
+        if (hasRsePaper) {
+            promptPool.push('你在 Remote Sensing of Environment 的工作亮点是什么？');
+        }
+        if (hasPatents) {
+            promptPool.push('两项土地覆盖变化监测专利分别解决了什么问题？');
+        }
+        if (hasCodePublication) {
+            promptPool.push('你开源的几个方法分别适合什么应用场景？');
+        }
+        promptPool.push('你在土地覆盖变化监测方面最核心的成果是什么？');
+        promptPool.push('哪篇论文最能代表你当前的研究主线？');
+        promptPool.push('你的方法相比传统变化检测方法优势在哪里？');
+
+        if (lowerUserText.includes('论文')) {
+            promptPool.unshift('你被引较高的那篇论文为什么影响更大？');
+        }
+        if (lowerUserText.includes('专利')) {
+            promptPool.unshift('这些专利和你的论文方法之间是什么关系？');
+        }
+
+        return dedupePrompts(promptPool).slice(0, 3);
+    }
+
+    function normalizePromptSuggestions(raw, fallbackPrompts) {
+        const cleaned = String(raw || '')
+            .trim()
+            .replace(/^```json\s*/i, '')
+            .replace(/^```\s*/, '')
+            .replace(/```$/, '')
+            .trim();
+
+        let parsed = [];
+        try {
+            parsed = JSON.parse(cleaned);
+        } catch (_) {
+            const match = cleaned.match(/\[[\s\S]*\]/);
+            if (match) {
+                try {
+                    parsed = JSON.parse(match[0]);
+                } catch (_) {}
+            }
+        }
+
+        const prompts = Array.isArray(parsed)
+            ? parsed.map(sanitizePromptText).filter(Boolean)
+            : [];
+
+        const merged = dedupePrompts(prompts.concat(fallbackPrompts || []));
+        return merged.slice(0, 3);
+    }
+
+    function sanitizePromptText(text) {
+        const normalized = String(text || '')
+            .replace(/^[\s\d.、-]+/, '')
+            .replace(/[\r\n]+/g, ' ')
+            .trim();
+
+        if (!normalized) return '';
+
+        const withoutEnding = normalized.replace(/[。！!]+$/g, '').trim();
+        const finalText = /[？?]$/.test(withoutEnding) ? withoutEnding : `${withoutEnding}？`;
+        if (finalText.length < 6 || finalText.length > 40) return '';
+        return finalText;
+    }
+
+    function dedupePrompts(prompts) {
+        const seen = new Set();
+        const result = [];
+
+        prompts.forEach(prompt => {
+            const key = String(prompt || '').trim();
+            if (!key || seen.has(key)) return;
+            seen.add(key);
+            result.push(key);
+        });
+
+        return result;
     }
 
     function welcomeHtml() {

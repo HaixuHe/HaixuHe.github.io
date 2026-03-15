@@ -130,6 +130,11 @@
   "projects": [],
   "ai": {
     "apiKey": "sk-yfmngijulkxmholdxeaacanoyitzmkckluvhqkwzaywriwio",
-    "systemPrompt": ""
+    "systemPrompt": "",
+    "quickPrompts": [
+      "请先用第一人称简单介绍一下你自己和目前的研究方向。",
+      "你最有代表性的论文有哪些？分别解决了什么问题？",
+      "如果我想进一步交流或合作，应该如何联系你？"
+    ]
   }
 }

@@ -1,9 +1,13 @@
 // AI Chat Assistant — powered by 硅基流动 (SiliconFlow)
 (function () {
     const SF_BASE = 'https://api.siliconflow.cn/v1';
+    const SF_MODEL = 'Pro/deepseek-ai/DeepSeek-V3.2';
+    const DEFAULT_PROMPTS = [
+        '请先用第一人称简单介绍一下你自己和目前的研究方向。',
+        '你最有代表性的论文有哪些？分别解决了什么问题？',
+        '如果我想进一步交流或合作，应该如何联系你？'
+    ];
 
-    const SF_MODEL = 'Pro/zai-org/GLM-4.7';
-    // const SF_MODEL = 'Pro/deepseek-ai/DeepSeek-V3.2';Pro/zai-org/GLM-4.7
     const state = {
         open: false,
         messages: [],   // conversation history (excluding system prompt)
@@ -16,21 +20,25 @@
     /* ── Init ────────────────────────────────────────── */
 
     document.addEventListener('DOMContentLoaded', async function () {
-        // Pre-load data.json so it's ready to inject into every request
         try {
             const res = await fetch('data.json?t=' + Date.now());
             if (res.ok) state.siteData = await res.json();
         } catch (_) {}
 
-        // Event bindings
+        hydrateChatUi();
+
         document.getElementById('aiChatBtn').addEventListener('click', togglePanel);
         document.getElementById('aiCloseBtn').addEventListener('click', togglePanel);
         document.getElementById('aiClearBtn').addEventListener('click', clearChat);
         document.getElementById('aiSendBtn').addEventListener('click', sendMessage);
+        document.getElementById('aiPromptList').addEventListener('click', handlePromptPresetClick);
 
         const input = document.getElementById('aiChatInput');
         input.addEventListener('keydown', function (e) {
-            if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
         });
         input.addEventListener('input', autoResize);
     });
@@ -45,16 +53,22 @@
 
     function clearChat() {
         state.messages = [];
-        document.getElementById('aiChatMessages').innerHTML = welcomeHtml();
+        hydrateChatUi();
     }
 
     /* ── System prompt ───────────────────────────────── */
 
     function buildSystemPrompt() {
         const data = state.siteData;
-        if (!data) return `你现在扮演的是${name}（${nameEn}）本人，请用中文回答用户的问题。`;        // 使用管理员在 admin 中配置的自定义提示词（若有）
-        if (data.ai?.systemPrompt) return data.ai.systemPrompt;        const name = data.profile?.name || '贺海旭';
-        const nameEn = data.profile?.nameEn || 'Haixu He';
+        const name = data?.profile?.name || '贺海旭';
+        const nameEn = data?.profile?.nameEn || 'Haixu He';
+
+        if (!data) {
+            return `你现在扮演 ${name}（${nameEn}）本人，请用中文回答用户的问题。`;
+        }
+
+        if (data.ai?.systemPrompt) return data.ai.systemPrompt;
+
         return `你现在扮演 ${name}（${nameEn}）本人。以下是你的完整个人信息（JSON格式），请严格基于这些信息，以第一人称"我"与用户交流，语气自然、亲切、专业。
 
 \`\`\`json
@@ -73,8 +87,8 @@ ${JSON.stringify(data, null, 2)}
     /* ── Send message ────────────────────────────────── */
 
     async function sendMessage() {
-        const input  = document.getElementById('aiChatInput');
-        const text   = input.value.trim();
+        const input = document.getElementById('aiChatInput');
+        const text = input.value.trim();
         if (!text) return;
 
         if (!getApiKey()) {
@@ -87,7 +101,6 @@ ${JSON.stringify(data, null, 2)}
         appendUserMsg(text);
         state.messages.push({ role: 'user', content: text });
 
-        // Thinking indicator
         const thinkId = appendAiMsg(
             '<span class="ai-thinking"><span></span><span></span><span></span></span>', ''
         );
@@ -99,6 +112,7 @@ ${JSON.stringify(data, null, 2)}
                 { role: 'system', content: buildSystemPrompt() },
                 ...state.messages
             ],
+            enable_thinking: false,
             stream: true,
             max_tokens: 2048,
             temperature: 0.7
@@ -121,11 +135,11 @@ ${JSON.stringify(data, null, 2)}
 
             removeMsg(thinkId);
             const replyId = appendAiMsg('', '');
-            const bubble  = document.querySelector(`#${replyId} .ai-bubble`);
-            const msgBox  = document.getElementById('aiChatMessages');
-            let fullText  = '';
+            const bubble = document.querySelector(`#${replyId} .ai-bubble`);
+            const msgBox = document.getElementById('aiChatMessages');
+            let fullText = '';
 
-            const reader  = res.body.getReader();
+            const reader = res.body.getReader();
             const decoder = new TextDecoder();
 
             while (true) {
@@ -138,7 +152,7 @@ ${JSON.stringify(data, null, 2)}
                     if (raw === '[DONE]') continue;
                     try {
                         const parsed = JSON.parse(raw);
-                        const delta  = parsed.choices?.[0]?.delta?.content || '';
+                        const delta = parsed.choices?.[0]?.delta?.content || '';
                         fullText += delta;
                         bubble.innerHTML = formatMd(fullText);
                         msgBox.scrollTop = msgBox.scrollHeight;
@@ -147,7 +161,6 @@ ${JSON.stringify(data, null, 2)}
             }
 
             state.messages.push({ role: 'assistant', content: fullText });
-
         } catch (e) {
             removeMsg(thinkId);
             appendAiMsg(`请求失败：${escHtml(e.message)}`, 'error');
@@ -158,6 +171,48 @@ ${JSON.stringify(data, null, 2)}
     }
 
     /* ── DOM helpers ─────────────────────────────────── */
+
+    function hydrateChatUi() {
+        document.getElementById('aiChatMessages').innerHTML = welcomeHtml();
+        renderQuickPrompts();
+    }
+
+    function getQuickPrompts() {
+        const configured = Array.isArray(state.siteData?.ai?.quickPrompts)
+            ? state.siteData.ai.quickPrompts
+            : [];
+
+        return DEFAULT_PROMPTS.map((fallback, index) => {
+            const prompt = typeof configured[index] === 'string' ? configured[index].trim() : '';
+            return prompt || fallback;
+        });
+    }
+
+    function renderQuickPrompts() {
+        const list = document.getElementById('aiPromptList');
+        if (!list) return;
+
+        list.innerHTML = '';
+        getQuickPrompts().forEach(prompt => {
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.className = 'ai-prompt-chip';
+            button.dataset.prompt = prompt;
+            button.title = '点击填入输入框';
+            button.textContent = prompt;
+            list.appendChild(button);
+        });
+    }
+
+    function handlePromptPresetClick(event) {
+        const button = event.target.closest('.ai-prompt-chip');
+        if (!button) return;
+
+        const input = document.getElementById('aiChatInput');
+        input.value = button.dataset.prompt || '';
+        autoResize();
+        input.focus();
+    }
 
     function welcomeHtml() {
         const name = state.siteData?.profile?.name || '我';
@@ -171,7 +226,7 @@ ${JSON.stringify(data, null, 2)}
         const id = 'aim' + (++state.msgCounter);
         const container = document.getElementById('aiChatMessages');
         const el = document.createElement('div');
-        el.id        = id;
+        el.id = id;
         el.className = 'ai-chat-msg user-msg';
         el.innerHTML = `<div class="ai-bubble">${escHtml(text).replace(/\n/g, '<br>')}</div>`;
         container.appendChild(el);
@@ -183,7 +238,7 @@ ${JSON.stringify(data, null, 2)}
         const id = 'aim' + (++state.msgCounter);
         const container = document.getElementById('aiChatMessages');
         const el = document.createElement('div');
-        el.id        = id;
+        el.id = id;
         el.className = 'ai-chat-msg ai-msg' + (extraClass ? ' ' + extraClass : '');
         const name = state.siteData?.profile?.name || '';
         el.innerHTML =
@@ -216,34 +271,24 @@ ${JSON.stringify(data, null, 2)}
     }
 
     function formatMd(raw) {
-        // 1. Split on fenced code blocks (protect them first)
         const parts = raw.split(/(```[\s\S]*?```)/g);
 
         return parts.map((part, idx) => {
             if (idx % 2 === 1) {
-                // Code block
                 const code = part
                     .replace(/^```\w*\n?/, '')
                     .replace(/\n?```$/, '');
                 return `<pre><code>${escHtml(code)}</code></pre>`;
             }
 
-            // Regular text — escape HTML first, then apply inline markdown
             let t = escHtml(part);
 
-            // Inline code
             t = t.replace(/`([^`\n]+)`/g, '<code>$1</code>');
-            // Bold
             t = t.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-            // Italic
             t = t.replace(/\*(.*?)\*/g, '<em>$1</em>');
-            // Headers → bold
             t = t.replace(/^#{1,3} (.+)$/gm, '<strong>$1</strong>');
-            // Unordered list items
             t = t.replace(/^[-*] (.+)$/gm, '&bull;&nbsp;$1');
-            // Ordered list items
             t = t.replace(/^(\d+)\. (.+)$/gm, '$1.&nbsp;$2');
-            // Line breaks
             t = t.replace(/\n/g, '<br>');
 
             return t;
@@ -254,7 +299,7 @@ ${JSON.stringify(data, null, 2)}
 
     function showToast(msg) {
         const t = document.createElement('div');
-        t.className   = 'ai-toast';
+        t.className = 'ai-toast';
         t.textContent = msg;
         document.body.appendChild(t);
         requestAnimationFrame(() => t.classList.add('show'));

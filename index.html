@@ -156,7 +156,7 @@
 
     <!-- AI Chat Assistant -->
     <button class="ai-chat-btn" id="aiChatBtn" title="与贺海旭 AI 交流" aria-label="打开AI助手">
-        <img src="img/avatar/hhx.png" alt="贺海旭" onerror="this.style.display='none';this.parentElement.innerHTML='<i class=\'fas fa-robot\'></i>';">
+        <img src="img/avatar/hhx.png" alt="贺海旭" onerror="this.style.display='none';this.parentElement.innerHTML='&lt;i class=&quot;fas fa-robot&quot;&gt;&lt;/i&gt;';">
     </button>
 
     <div class="ai-chat-panel" id="aiChatPanel" role="dialog" aria-label="AI助手">
@@ -177,10 +177,12 @@
 
         <div class="ai-chat-messages" id="aiChatMessages">
             <div class="ai-chat-msg ai-msg">
-                <div class="ai-avatar"><img src="img/avatar/hhx.png" alt="贺海旭" onerror="this.parentElement.innerHTML='<i class=\"fas fa-robot\"></i>';"></div>
+                <div class="ai-avatar"><img src="img/avatar/hhx.png" alt="贺海旭" onerror="this.parentElement.innerHTML='&lt;i class=&quot;fas fa-robot&quot;&gt;&lt;/i&gt;';"></div>
                 <div class="ai-bubble">你好！我是贺海旭，很高兴认识你！你可以问我关于我的研究方向、发表论文、教育背景等任何问题。</div>
             </div>
         </div>
+
+        <div class="ai-prompt-list" id="aiPromptList" aria-label="常用 Prompt"></div>
 
         <div class="ai-chat-input-area">
             <textarea id="aiChatInput" placeholder="输入问题，Enter 发送…" rows="1"></textarea>

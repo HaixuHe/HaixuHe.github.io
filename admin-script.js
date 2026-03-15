@@ -6,6 +6,12 @@ let githubConfig = {
     owner: ''
 };
 
+const DEFAULT_AI_PROMPTS = [
+    '请先用第一人称简单介绍一下你自己和目前的研究方向。',
+    '你最有代表性的论文有哪些？分别解决了什么问题？',
+    '如果我想进一步交流或合作，应该如何联系你？'
+];
+
 document.addEventListener('DOMContentLoaded', function() {
     initializeNavigation();
     loadConfig();
@@ -186,8 +192,22 @@ function populateSite() {
 
 function populateAi() {
     const ai = data.ai || {};
+    const prompts = normalizeAiQuickPrompts(ai.quickPrompts);
+
     document.getElementById('aiApiKey').value = ai.apiKey || '';
     document.getElementById('aiSystemPrompt').value = ai.systemPrompt || '';
+    document.getElementById('aiPrompt1').value = prompts[0];
+    document.getElementById('aiPrompt2').value = prompts[1];
+    document.getElementById('aiPrompt3').value = prompts[2];
+}
+
+function normalizeAiQuickPrompts(prompts) {
+    const promptList = Array.isArray(prompts) ? prompts : [];
+
+    return DEFAULT_AI_PROMPTS.map((fallback, index) => {
+        const prompt = typeof promptList[index] === 'string' ? promptList[index].trim() : '';
+        return prompt || fallback;
+    });
 }
 
 function populateProfile() {
@@ -555,6 +575,12 @@ function removeProject(index) {
 }
 
 function collectData() {
+    const quickPrompts = normalizeAiQuickPrompts([
+        document.getElementById('aiPrompt1').value,
+        document.getElementById('aiPrompt2').value,
+        document.getElementById('aiPrompt3').value
+    ]);
+
     data.site = {
         title: document.getElementById('siteTitle').value,
         description: document.getElementById('siteDescription').value
@@ -562,7 +588,8 @@ function collectData() {
 
     data.ai = {
         apiKey: document.getElementById('aiApiKey').value.trim(),
-        systemPrompt: document.getElementById('aiSystemPrompt').value.trim()
+        systemPrompt: document.getElementById('aiSystemPrompt').value.trim(),
+        quickPrompts
     };
 
     data.profile = {

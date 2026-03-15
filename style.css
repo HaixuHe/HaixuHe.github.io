@@ -1029,6 +1029,37 @@ body {
 .ai-bubble strong { font-weight: 600; }
 .ai-bubble em     { font-style: italic; }
 
+.ai-prompt-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 0 12px 10px;
+    background: white;
+}
+
+.ai-prompt-chip {
+    border: none;
+    border-radius: 999px;
+    background: #eef7fb;
+    color: var(--primary-color);
+    padding: 7px 12px;
+    font-size: 0.8rem;
+    line-height: 1.4;
+    cursor: pointer;
+    transition: transform 0.15s ease, background 0.15s ease, color 0.15s ease;
+}
+
+.ai-prompt-chip:hover {
+    background: var(--primary-color);
+    color: white;
+    transform: translateY(-1px);
+}
+
+.ai-prompt-chip:focus-visible {
+    outline: 2px solid rgba(26, 95, 122, 0.25);
+    outline-offset: 2px;
+}
+
 /* Thinking animation */
 .ai-thinking {
     display: inline-flex;

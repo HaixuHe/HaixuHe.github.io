@@ -230,15 +230,30 @@
                     <div class="alert alert-info" style="margin-bottom: 20px;">
                         <i class="fas fa-info-circle"></i>
                         <div>
-                            <p><strong>安全提示：</strong> API Key 会存入 data.json 并随网站公开。请确保此 Key 仅用于本站，建议在硬基流动后台设置费用限额和 IP 白名单。</p>
-                            <p>所有访客共享此密钥，模型固定为 <strong>DeepSeek-V3 (Pro)</strong>。</p>
+                            <p><strong>安全提示：</strong> API Key 会存入 data.json 并随网站公开。请确保此 Key 仅用于本站，建议在硅基流动后台设置费用限额和 IP 白名单。</p>
+                            <p>所有访客共享此密钥，模型固定为 <strong>DeepSeek-V3.2 (Pro)</strong>，并已关闭深度思考模式。</p>
                         </div>
                     </div>
                     <form id="aiForm" class="form">
                         <div class="form-group">
-                            <label for="aiApiKey">硬基流动 API Key</label>
+                            <label for="aiApiKey">硅基流动 API Key</label>
                             <input type="password" id="aiApiKey" name="aiApiKey" placeholder="sk-..."
                                    style="font-family: monospace;">
+                        </div>
+                        <div class="form-group">
+                            <label for="aiPrompt1">默认 Prompt 1</label>
+                            <textarea id="aiPrompt1" name="aiPrompt1" rows="2" placeholder="例如：请先用第一人称简单介绍一下你自己和目前的研究方向。"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="aiPrompt2">默认 Prompt 2</label>
+                            <textarea id="aiPrompt2" name="aiPrompt2" rows="2" placeholder="例如：你最有代表性的论文有哪些？分别解决了什么问题？"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="aiPrompt3">默认 Prompt 3</label>
+                            <textarea id="aiPrompt3" name="aiPrompt3" rows="2" placeholder="例如：如果我想进一步交流或合作，应该如何联系你？"></textarea>
+                            <small style="color: #6b7280; font-size: 0.85rem; margin-top: 4px; display: block;">
+                                这 3 条会显示在前台聊天框里，用户点击后会自动填入输入框；留空则回退为内置默认值。
+                            </small>
                         </div>
                         <div class="form-group">
                             <label for="aiSystemPrompt">自定义系统提示词（可选）</label>

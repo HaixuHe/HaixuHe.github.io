@@ -52,7 +52,7 @@
 
     function buildSystemPrompt() {
         const data = state.siteData;
-        if (!data) return '你是一个AI学术助手，请用中文回答用户的问题。';        // 使用管理员在 admin 中配置的自定义提示词（若有）
+        if (!data) return `你现在扮演的是${name}（${nameEn}）本人，请用中文回答用户的问题。`;        // 使用管理员在 admin 中配置的自定义提示词（若有）
         if (data.ai?.systemPrompt) return data.ai.systemPrompt;        const name = data.profile?.name || '贺海旭';
         const nameEn = data.profile?.nameEn || 'Haixu He';
         return `你现在扮演 ${name}（${nameEn}）本人。以下是你的完整个人信息（JSON格式），请严格基于这些信息，以第一人称"我"与用户交流，语气自然、亲切、专业。

@@ -442,6 +442,36 @@ body {
     min-height: 60px;
 }
 
+.asset-upload-group {
+    margin-top: -4px;
+}
+
+.asset-upload-row {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.asset-file-input {
+    flex: 1;
+    padding: 8px 10px;
+    border: 1px dashed var(--border-color);
+    background: var(--bg-light);
+}
+
+.asset-upload-btn {
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.asset-upload-help {
+    display: block;
+    margin-top: 8px;
+    color: var(--text-muted);
+    font-size: 0.82rem;
+    line-height: 1.5;
+}
+
 .authors-list {
     display: flex;
     flex-wrap: wrap;
@@ -714,6 +744,11 @@ pre {
     .form-row,
     .item-form-row {
         grid-template-columns: 1fr;
+    }
+
+    .asset-upload-row {
+        flex-direction: column;
+        align-items: stretch;
     }
     
     .top-bar {

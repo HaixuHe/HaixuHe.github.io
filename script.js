@@ -127,14 +127,20 @@ function renderPublications() {
         <div class="publication-item" data-type="${pub.type}">
             <div class="pub-year">${pub.year}</div>
             <div class="pub-content">
-                <h3 class="pub-title">${pub.title}</h3>
+                <div class="pub-title-row">
+                    <h3 class="pub-title">${pub.title}</h3>
+                    <div class="pub-title-tags">
+                        ${pub.highlight ? `<span class="resource-badge highlight"><i class="fas fa-star"></i> 代表论文</span>` : ''}
+                        ${pub.pdf ? `<span class="resource-badge file"><i class="fas fa-file-pdf"></i> PDF</span>` : ''}
+                    </div>
+                </div>
                 <p class="pub-authors"><strong>${formatAuthors(pub.authors)}</strong></p>
                 <p class="pub-journal">
                     <i class="fas ${pub.type === 'journal' ? 'fa-book' : 'fa-calendar-alt'}"></i> ${pub.journal}
                 </p>
                 <div class="pub-actions-row">
                     ${pub.doi ? `<a href="${pub.doi}" class="pub-link" target="_blank" rel="noopener noreferrer"><i class="fas fa-external-link-alt"></i> DOI</a>` : ''}
-                    ${pub.pdf ? `<a href="${pub.pdf}" class="pub-link" target="_blank" rel="noopener noreferrer"><i class="fas fa-file-pdf"></i> PDF</a>` : ''}
+                    ${pub.pdf ? `<a href="${pub.pdf}" class="pub-link" download><i class="fas fa-file-arrow-down"></i> 下载PDF</a>` : ''}
                     ${pub.code ? `<a href="${pub.code}" class="pub-link" target="_blank" rel="noopener noreferrer"><i class="fas fa-code"></i> Code</a>` : ''}
                     ${pub.abstract ? `<button class="pub-abstract-toggle" onclick="toggleAbstract(${index})"><i class="fas fa-chevron-down"></i> 查看摘要</button>` : ''}
                     ${(pub.citations > 0) ? `<span class="pub-citations" title="引用次数"><i class="fas fa-quote-right"></i> 被引用 ${pub.citations} 次</span>` : ''}
@@ -190,11 +196,14 @@ function renderPatents() {
                 <i class="fas fa-certificate"></i>
             </div>
             <div class="patent-content">
-                <h3>${patent.title}</h3>
+                <div class="patent-title-row">
+                    <h3>${patent.title}</h3>
+                    <div class="patent-title-tags">
+                        <span class="status-badge ${patent.status}">${patent.statusText}</span>
+                        ${patent.pdf ? `<a href="${patent.pdf}" class="resource-badge file patent-resource-link" download><i class="fas fa-file-arrow-down"></i> PDF</a>` : ''}
+                    </div>
+                </div>
                 <p class="patent-number">专利号: ${patent.patentNumber}</p>
-                <p class="patent-status">
-                    <span class="status-badge ${patent.status}">${patent.statusText}</span>
-                </p>
                 <p class="patent-inventors">发明人: ${(patent.inventors || []).join(', ')}</p>
             </div>
         </div>

@@ -76,6 +76,15 @@ body {
     font-size: 1.2rem;
 }
 
+.nav-logo-avatar {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    object-fit: cover;
+    display: block;
+    box-shadow: 0 2px 8px rgba(26, 95, 122, 0.2);
+}
+
 .nav-menu {
     display: flex;
     list-style: none;
@@ -366,6 +375,22 @@ body {
     line-height: 1.4;
 }
 
+.pub-title-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 4px;
+}
+
+.pub-title-tags {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
 .pub-authors {
     color: var(--text-light);
     font-size: 0.9rem;
@@ -463,6 +488,28 @@ body {
     color: var(--text-light);
 }
 
+.resource-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 500;
+    line-height: 1;
+    text-decoration: none;
+}
+
+.resource-badge.file {
+    background: #fee2e2;
+    color: #b91c1c;
+}
+
+.resource-badge.highlight {
+    background: #dbeafe;
+    color: #1d4ed8;
+}
+
 /* Patents */
 .patents-list {
     display: flex;
@@ -497,7 +544,23 @@ body {
     font-size: 0.95rem;
     font-weight: 600;
     color: var(--text-dark);
-    margin-bottom: 4px;
+    margin: 0;
+}
+
+.patent-title-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 6px;
+}
+
+.patent-title-tags {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 6px;
+    flex-shrink: 0;
 }
 
 .patent-number {
@@ -526,6 +589,10 @@ body {
 .status-badge.pending {
     background: #fef3c7;
     color: #92400e;
+}
+
+.patent-resource-link:hover {
+    opacity: 0.9;
 }
 
 .patent-inventors {
@@ -749,6 +816,17 @@ body {
     .patent-card {
         flex-direction: column;
         gap: 8px;
+    }
+
+    .pub-title-row,
+    .patent-title-row {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .pub-title-tags,
+    .patent-title-tags {
+        justify-content: flex-start;
     }
 
     .pub-year {

@@ -35,6 +35,8 @@ document.addEventListener('DOMContentLoaded', function() {
     window.saveToGitHub = saveToGitHub;
     window.showToast = showToast;
     window.updateCitations = updateCitations;
+    window.uploadPublicationPdf = uploadPublicationPdf;
+    window.uploadPatentPdf = uploadPatentPdf;
 });
 
 function initializeNavigation() {
@@ -354,9 +356,19 @@ function createPublicationCard(pub, index) {
                     <input type="url" value="${pub.doi || ''}" data-field="doi">
                 </div>
                 <div class="item-form-group">
-                    <label>PDF链接</label>
-                    <input type="url" value="${pub.pdf || ''}" data-field="pdf">
+                    <label>PDF链接 / 托管地址</label>
+                    <input type="url" value="${pub.pdf || ''}" data-field="pdf" placeholder="可粘贴外部链接，或使用下方按钮上传到 GitHub 仓库">
                 </div>
+            </div>
+            <div class="item-form-group asset-upload-group">
+                <label>上传论文 PDF</label>
+                <div class="asset-upload-row">
+                    <input type="file" id="publicationPdfFile-${index}" class="asset-file-input" accept=".pdf,application/pdf">
+                    <button type="button" class="btn btn-secondary asset-upload-btn" onclick="uploadPublicationPdf(${index}, this)">
+                        <i class="fas fa-upload"></i> 上传到仓库
+                    </button>
+                </div>
+                <small class="asset-upload-help">文件会托管到仓库的 pdfs/publications 目录。上传成功后会自动回填链接，最后仍需点击“保存到GitHub”写入 data.json。</small>
             </div>
             <div class="item-form-group">
                 <label>代码链接</label>
@@ -458,6 +470,20 @@ function createPatentCard(patent, index) {
                 <input type="text" value="${patent.patentNumber || ''}" data-field="patentNumber">
             </div>
             <div class="item-form-group">
+                <label>PDF链接 / 托管地址</label>
+                <input type="url" value="${patent.pdf || ''}" data-field="pdf" placeholder="可粘贴外部链接，或上传专利说明书 PDF">
+            </div>
+            <div class="item-form-group asset-upload-group">
+                <label>上传专利 PDF</label>
+                <div class="asset-upload-row">
+                    <input type="file" id="patentPdfFile-${index}" class="asset-file-input" accept=".pdf,application/pdf">
+                    <button type="button" class="btn btn-secondary asset-upload-btn" onclick="uploadPatentPdf(${index}, this)">
+                        <i class="fas fa-upload"></i> 上传到仓库
+                    </button>
+                </div>
+                <small class="asset-upload-help">文件会托管到仓库的 pdfs/patents 目录。上传成功后会自动回填链接，最后仍需点击“保存到GitHub”写入 data.json。</small>
+            </div>
+            <div class="item-form-group">
                 <label>发明人（用逗号分隔）</label>
                 <input type="text" value="${(patent.inventors || []).join(', ')}" data-field="inventors">
             </div>
@@ -472,6 +498,7 @@ function addPatent() {
         id: 'pat' + String(Date.now()).slice(-6),
         title: '',
         patentNumber: '',
+        pdf: '',
         status: 'pending',
         statusText: '审查中',
         inventors: [],
@@ -572,6 +599,177 @@ function removeProject(index) {
         populateProjects();
         showToast('项目已删除', 'success');
     }
+}
+
+async function uploadPublicationPdf(index, button) {
+    return uploadPdfAsset('publications', index, button);
+}
+
+async function uploadPatentPdf(index, button) {
+    return uploadPdfAsset('patents', index, button);
+}
+
+async function uploadPdfAsset(collection, index, button) {
+    if (!githubConfig.token) {
+        showToast('请先配置GitHub Token', 'error');
+        openModal('configModal');
+        return;
+    }
+
+    const fileInputId = collection === 'publications'
+        ? `publicationPdfFile-${index}`
+        : `patentPdfFile-${index}`;
+    const fileInput = document.getElementById(fileInputId);
+    const file = fileInput?.files?.[0];
+
+    if (!file) {
+        showToast('请先选择一个 PDF 文件', 'error');
+        return;
+    }
+
+    if (!/\.pdf$/i.test(file.name) && file.type !== 'application/pdf') {
+        showToast('仅支持上传 PDF 文件', 'error');
+        return;
+    }
+
+    const item = data[collection]?.[index];
+    if (!item) {
+        showToast('未找到对应条目，请刷新页面后重试', 'error');
+        return;
+    }
+
+    const originalLabel = button ? button.innerHTML : '';
+    if (button) {
+        button.disabled = true;
+        button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 上传中';
+    }
+
+    try {
+        const repoInfo = await resolveRepoInfo();
+        const fileBase64 = await readFileAsBase64(file);
+        const relativePath = buildPdfRepoPath(collection, item, file.name);
+
+        const response = await fetch(
+            `https://api.github.com/repos/${repoInfo.owner}/${repoInfo.repo}/contents/${relativePath}`,
+            {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `token ${githubConfig.token}`,
+                    'Accept': 'application/vnd.github.v3+json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    message: `上传${collection === 'publications' ? '论文' : '专利'}PDF - ${item.id || file.name}`,
+                    content: fileBase64,
+                    branch: repoInfo.branch
+                })
+            }
+        );
+
+        if (!response.ok) {
+            const error = await response.json().catch(() => ({}));
+            throw new Error(error.message || '上传失败');
+        }
+
+        const card = button?.closest('.item-card');
+        const pdfInput = card?.querySelector('[data-field="pdf"]');
+        if (pdfInput) pdfInput.value = relativePath;
+        data[collection][index].pdf = relativePath;
+        fileInput.value = '';
+        showToast('PDF 已上传到仓库，请继续点击“保存到GitHub”同步数据', 'success');
+    } catch (error) {
+        showToast('PDF 上传失败: ' + error.message, 'error');
+        console.error('PDF 上传失败:', error);
+    } finally {
+        if (button) {
+            button.disabled = false;
+            button.innerHTML = originalLabel;
+        }
+    }
+}
+
+async function resolveRepoInfo() {
+    const repoInput = githubConfig.repo.trim();
+    let owner = githubConfig.owner || localStorage.getItem('github_owner') || '';
+    let repo = '';
+
+    if (repoInput.includes('/')) {
+        const parts = repoInput.split('/');
+        owner = parts[0];
+        repo = parts[1];
+    } else {
+        if (!owner) {
+            const userResponse = await fetch('https://api.github.com/user', {
+                headers: {
+                    'Authorization': `token ${githubConfig.token}`,
+                    'Accept': 'application/vnd.github.v3+json'
+                }
+            });
+
+            if (!userResponse.ok) {
+                throw new Error('无法获取 GitHub 用户信息，请检查 Token 是否有效');
+            }
+
+            const userData = await userResponse.json();
+            owner = userData.login;
+            localStorage.setItem('github_owner', owner);
+        }
+
+        repo = repoInput || 'HaixuHe.github.io';
+    }
+
+    githubConfig.owner = owner;
+
+    return {
+        owner,
+        repo,
+        branch: githubConfig.branch || 'main'
+    };
+}
+
+function readFileAsBase64(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = function () {
+            const result = String(reader.result || '');
+            const marker = 'base64,';
+            const base64Index = result.indexOf(marker);
+            if (base64Index === -1) {
+                reject(new Error('无法读取文件内容'));
+                return;
+            }
+            resolve(result.slice(base64Index + marker.length));
+        };
+        reader.onerror = function () {
+            reject(new Error('文件读取失败'));
+        };
+        reader.readAsDataURL(file);
+    });
+}
+
+function buildPdfRepoPath(collection, item, originalFileName) {
+    const prefix = collection === 'publications' ? 'publications' : 'patents';
+    const itemId = sanitizeSlug(item.id || `${prefix}-${Date.now()}`);
+    const fileName = sanitizePdfFileName(originalFileName);
+    return `pdfs/${prefix}/${itemId}-${Date.now()}-${fileName}`;
+}
+
+function sanitizePdfFileName(fileName) {
+    const name = String(fileName || 'document')
+        .replace(/\.[^.]+$/, '')
+        .normalize('NFKD')
+        .replace(/[\u0300-\u036f]/g, '');
+
+    const safe = sanitizeSlug(name) || 'document';
+    return `${safe}.pdf`;
+}
+
+function sanitizeSlug(value) {
+    return String(value || '')
+        .toLowerCase()
+        .replace(/[^a-z0-9_-]+/g, '-')
+        .replace(/-+/g, '-')
+        .replace(/^-|-$/g, '');
 }
 
 function collectData() {

@@ -126,7 +126,30 @@
       "citations": 68
     }
   ],
-  "patents": [],
+  "patents": [
+    {
+      "id": "pat535888",
+      "title": "土地覆盖变化监测方法、装置、电子设备及存储介质",
+      "patentNumber": "ZL 2023 1 1126526.X",
+      "status": "granted",
+      "statusText": "已授权",
+      "inventors": [
+        "阎继宁;贺海旭;王力哲;李军;宋维静;韩伟"
+      ],
+      "year": "2023"
+    },
+    {
+      "id": "pat509318",
+      "title": "土地覆盖变化监测方法、模型训练方法及相关装置",
+      "patentNumber": "ZL 2024 1 1930928.X",
+      "status": "granted",
+      "statusText": "已授权",
+      "inventors": [
+        "阎继宁;贺海旭;王力哲;龙旭;宋维静;韩伟"
+      ],
+      "year": "2025"
+    }
+  ],
   "projects": [],
   "ai": {
     "apiKey": "sk-yfmngijulkxmholdxeaacanoyitzmkckluvhqkwzaywriwio",

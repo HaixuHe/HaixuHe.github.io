@@ -2,7 +2,7 @@
 (function () {
     const SF_BASE = 'https://api.siliconflow.cn/v1';
 
-    const SF_MODEL = 'Pro/deepseek-ai/DeepSeek-V3';
+    const SF_MODEL = 'Pro/deepseek-ai/DeepSeek-V3.2';
 
     const state = {
         open: false,

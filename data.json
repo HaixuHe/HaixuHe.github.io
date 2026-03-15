@@ -37,7 +37,7 @@
       ],
       "journal": "2024 IEEE International Conference on Signal, Information and Data Processing (ICSIDP)",
       "doi": "https://doi.org/10.1109/ICSIDP62679.2024.10869169",
-      "pdf": "",
+      "pdf": "pdfs/publications/pub231151-1773573797532-he-yan-2024-continuous-semantic-change-monitoring-of-land-cover-with-landsat-time-series.pdf",
       "code": "",
       "highlight": false,
       "abstract": "Rapid urbanization has led to frequent land cover changes, making continuous monitoring essential for capturing land use dynamics and enabling quick responses. It is crucial to detect both the dates and types of these changes, which current change detection models struggle to achieve simultaneously. In this study, we propose a supervised approach called Temporal Semantic Recognition Change Detection (TSRCD), using a Transformer-based sliding detector to learn mappings from spectral data to land cover changes over time. During monitoring, the model utilizes previously detected land cover types and additional observations as dual prompts to iteratively predict the next time point’s land cover type. We validated our approach using all clear Landsat data from the Wuhan urban agglomeration between 2008 and 2022. Experiments show that increasing the peek window size improves change detection accuracy, stabilizing at around ten, with an approximate 8% improvement in F1 score compared to CCDC. TSRCD not only tracks the dates of land cover changes but also accurately identifies change types, achieving 92% accuracy. In summary, TSRCD provides a novel and comprehensive solution for monitoring land cover changes using long-term series remote sensing data.",

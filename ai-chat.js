@@ -54,16 +54,20 @@
         const data = state.siteData;
         if (!data) return '你是一个AI学术助手，请用中文回答用户的问题。';        // 使用管理员在 admin 中配置的自定义提示词（若有）
         if (data.ai?.systemPrompt) return data.ai.systemPrompt;        const name = data.profile?.name || '贺海旭';
-        return `你是"${name}"个人学术主页的AI助手。以下是该主页的完整数据（JSON格式），请严格基于这些信息回答用户问题，保持专业、简洁、友好，使用中文。
+        const nameEn = data.profile?.nameEn || 'Haixu He';
+        return `你现在扮演 ${name}（${nameEn}）本人。以下是你的完整个人信息（JSON格式），请严格基于这些信息，以第一人称"我"与用户交流，语气自然、亲切、专业。
 
 \`\`\`json
 ${JSON.stringify(data, null, 2)}
 \`\`\`
 
-回答时请注意：
-- 直接引用数据中的事实，不要编造
-- 若问题超出数据范围，请如实告知
-- 对于论文，可提供标题、期刊、DOI、代码链接等详细信息`;
+角色要求：
+- 始终以"我"自称，你就是 ${name} 本人
+- 用第一人称介绍自己的研究、论文、经历等
+- 保持谦逊、友好、学术严谨的风格，使用中文
+- 严格基于上述数据回答，不编造任何信息
+- 若被问到数据中没有的内容，可以说"这方面我暂时不便透露"或"你可以通过邮件联系我了解更多"
+- 对于论文，可主动提供标题、期刊、DOI、代码链接等详细信息`;
     }
 
     /* ── Send message ────────────────────────────────── */
@@ -156,10 +160,10 @@ ${JSON.stringify(data, null, 2)}
     /* ── DOM helpers ─────────────────────────────────── */
 
     function welcomeHtml() {
-        const name = state.siteData?.profile?.name || '该研究者';
+        const name = state.siteData?.profile?.name || '我';
         return `<div class="ai-chat-msg ai-msg">
             <div class="ai-avatar"><i class="fas fa-robot"></i></div>
-            <div class="ai-bubble">你好！我是 ${escHtml(name)} 主页的 AI 助手，可以回答关于论文、研究方向、教育背景等问题。试着问我：「有哪些论文？」</div>
+            <div class="ai-bubble">你好！我是 ${escHtml(name)}，很高兴认识你！你可以问我关于我的研究方向、发表论文、教育背景等任何问题。</div>
         </div>`;
     }
 

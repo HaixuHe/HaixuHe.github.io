@@ -127,5 +127,9 @@
     }
   ],
   "patents": [],
-  "projects": []
+  "projects": [],
+  "ai": {
+    "apiKey": "",
+    "systemPrompt": ""
+  }
 }

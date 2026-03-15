@@ -171,6 +171,7 @@ async function loadData() {
         populatePublications();
         populatePatents();
         populateProjects();
+        populateAi();
     } catch (error) {
         console.error('加载数据失败:', error);
         showToast('加载数据失败: ' + error.message, 'error');
@@ -181,6 +182,12 @@ function populateSite() {
     const site = data.site || {};
     document.getElementById('siteTitle').value = site.title || '';
     document.getElementById('siteDescription').value = site.description || '';
+}
+
+function populateAi() {
+    const ai = data.ai || {};
+    document.getElementById('aiApiKey').value = ai.apiKey || '';
+    document.getElementById('aiSystemPrompt').value = ai.systemPrompt || '';
 }
 
 function populateProfile() {
@@ -551,6 +558,11 @@ function collectData() {
     data.site = {
         title: document.getElementById('siteTitle').value,
         description: document.getElementById('siteDescription').value
+    };
+
+    data.ai = {
+        apiKey: document.getElementById('aiApiKey').value.trim(),
+        systemPrompt: document.getElementById('aiSystemPrompt').value.trim()
     };
 
     data.profile = {

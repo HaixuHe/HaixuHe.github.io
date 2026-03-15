@@ -2,16 +2,16 @@
 (function () {
     const SF_BASE = 'https://api.siliconflow.cn/v1';
 
+    const SF_MODEL = 'Pro/deepseek-ai/DeepSeek-V3';
+
     const state = {
         open: false,
-        settingsOpen: false,
         messages: [],   // conversation history (excluding system prompt)
         siteData: null,
         msgCounter: 0
     };
 
-    function getApiKey() { return localStorage.getItem('sf_api_key') || ''; }
-    function getModel()  { return localStorage.getItem('sf_model')   || 'deepseek-ai/DeepSeek-V3'; }
+    function getApiKey() { return state.siteData?.ai?.apiKey || ''; }
 
     /* ── Init ────────────────────────────────────────── */
 
@@ -22,17 +22,10 @@
             if (res.ok) state.siteData = await res.json();
         } catch (_) {}
 
-        // Restore saved settings into the form
-        document.getElementById('sfApiKey').value = getApiKey();
-        const sel = document.getElementById('sfModel');
-        if (getModel()) sel.value = getModel();
-
         // Event bindings
         document.getElementById('aiChatBtn').addEventListener('click', togglePanel);
         document.getElementById('aiCloseBtn').addEventListener('click', togglePanel);
-        document.getElementById('aiSettingsBtn').addEventListener('click', toggleSettings);
         document.getElementById('aiClearBtn').addEventListener('click', clearChat);
-        document.getElementById('aiSaveSettings').addEventListener('click', saveSettings);
         document.getElementById('aiSendBtn').addEventListener('click', sendMessage);
 
         const input = document.getElementById('aiChatInput');
@@ -47,24 +40,7 @@
     function togglePanel() {
         state.open = !state.open;
         document.getElementById('aiChatPanel').classList.toggle('open', state.open);
-        if (!state.open && state.settingsOpen) {
-            state.settingsOpen = false;
-            document.getElementById('aiSettingsArea').classList.remove('open');
-        }
         if (state.open) document.getElementById('aiChatInput').focus();
-    }
-
-    function toggleSettings() {
-        state.settingsOpen = !state.settingsOpen;
-        document.getElementById('aiSettingsArea').classList.toggle('open', state.settingsOpen);
-    }
-
-    function saveSettings() {
-        localStorage.setItem('sf_api_key', document.getElementById('sfApiKey').value.trim());
-        localStorage.setItem('sf_model',   document.getElementById('sfModel').value);
-        state.settingsOpen = false;
-        document.getElementById('aiSettingsArea').classList.remove('open');
-        showToast('设置已保存');
     }
 
     function clearChat() {
@@ -76,8 +52,8 @@
 
     function buildSystemPrompt() {
         const data = state.siteData;
-        if (!data) return '你是一个AI学术助手，请用中文回答用户的问题。';
-        const name = data.profile?.name || '贺海旭';
+        if (!data) return '你是一个AI学术助手，请用中文回答用户的问题。';        // 使用管理员在 admin 中配置的自定义提示词（若有）
+        if (data.ai?.systemPrompt) return data.ai.systemPrompt;        const name = data.profile?.name || '贺海旭';
         return `你是"${name}"个人学术主页的AI助手。以下是该主页的完整数据（JSON格式），请严格基于这些信息回答用户问题，保持专业、简洁、友好，使用中文。
 
 \`\`\`json
@@ -98,8 +74,7 @@ ${JSON.stringify(data, null, 2)}
         if (!text) return;
 
         if (!getApiKey()) {
-            appendAiMsg('请先点击右上角 <i class="fas fa-key"></i> 图标，填写硅基流动 API Key。', 'error');
-            if (!state.settingsOpen) toggleSettings();
+            appendAiMsg('AI 助手暂时无法使用，请联系站点管理员。', 'error');
             return;
         }
 
@@ -115,7 +90,7 @@ ${JSON.stringify(data, null, 2)}
         document.getElementById('aiSendBtn').disabled = true;
 
         const payload = {
-            model: getModel(),
+            model: SF_MODEL,
             messages: [
                 { role: 'system', content: buildSystemPrompt() },
                 ...state.messages

@@ -26,6 +26,7 @@
                 <li><a href="#publications" class="nav-link">论文</a></li>
                 <li><a href="#patents" class="nav-link" id="navPatents">专利</a></li>
                 <li><a href="#projects" class="nav-link" id="navProjects">项目</a></li>
+                <li><a href="#honors" class="nav-link" id="navHonors">荣誉</a></li>
                 <li><a href="#contact" class="nav-link">联系</a></li>
                 <li><a href="admin.html" class="nav-link admin-link" title="管理后台"><i class="fas fa-cog"></i></a></li>
             </ul>
@@ -121,6 +122,43 @@
             <div class="projects-list" id="projectsList"></div>
         </div>
     </section>
+
+    <section id="honors" class="section honors-section" style="display: none;">
+        <div class="container">
+            <h2 class="section-title">荣誉与奖励</h2>
+            <div class="honors-carousel-wrap">
+                <button class="honors-nav-btn honors-prev" id="honorsPrev" aria-label="上一项">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <div class="honors-carousel-viewport" id="honorsViewport">
+                    <div class="honors-carousel-track" id="honorsTrack"></div>
+                </div>
+                <button class="honors-nav-btn honors-next" id="honorsNext" aria-label="下一项">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+            <div class="honors-dots" id="honorsDots"></div>
+        </div>
+    </section>
+
+    <!-- Honors Lightbox -->
+    <div class="honors-lightbox" id="honorsLightbox" role="dialog" aria-modal="true" aria-label="查看荣誉证书">
+        <div class="honors-lightbox-backdrop" id="honorsLightboxBackdrop"></div>
+        <div class="honors-lightbox-content">
+            <div class="honors-lightbox-header">
+                <span class="honors-lightbox-title" id="honorsLightboxTitle"></span>
+                <div class="honors-lightbox-actions">
+                    <a class="honors-lightbox-download" id="honorsLightboxDownload" href="#" download title="下载PDF">
+                        <i class="fas fa-download"></i>
+                    </a>
+                    <button class="honors-lightbox-close" id="honorsLightboxClose" title="关闭">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="honors-lightbox-body" id="honorsLightboxBody"></div>
+        </div>
+    </div>
 
     <section id="contact" class="section contact-section">
         <div class="container">

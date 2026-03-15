@@ -75,13 +75,16 @@ function populatePage() {
     renderPublications();
     renderPatents();
     renderProjects();
+    renderHonors();
     updateContactInfo(profile);
     updateFooter(profile);
     
     toggleSection('patents', (siteData.patents || []).length > 0);
     toggleSection('projects', (siteData.projects || []).length > 0);
+    toggleSection('honors', (siteData.honors || []).length > 0);
     toggleNavLink('patents', (siteData.patents || []).length > 0);
     toggleNavLink('projects', (siteData.projects || []).length > 0);
+    toggleNavLink('honors', (siteData.honors || []).length > 0);
 }
 
 function toggleSection(sectionId, show) {
@@ -229,6 +232,178 @@ function renderProjects() {
             </div>
         </div>
     `).join('');
+}
+
+function renderHonors() {
+    const honors = siteData.honors || [];
+    const track = document.getElementById('honorsTrack');
+    const dotsContainer = document.getElementById('honorsDots');
+    if (!track || !dotsContainer) return;
+
+    const ITEMS_PER_VIEW = getHonorItemsPerView();
+    let currentIndex = 0;
+    let autoTimer = null;
+
+    function buildSlides() {
+        track.innerHTML = honors.map((honor, i) => {
+            const typeIcon = { award: 'fa-trophy', certificate: 'fa-certificate', appointment: 'fa-id-badge' }[honor.type] || 'fa-medal';
+            const typeLabel = { award: '奖励', certificate: '证书', appointment: '聘书' }[honor.type] || '荣誉';
+            const imgSrc = honor.image || '';
+            return `
+            <div class="honor-slide" data-index="${i}">
+                <div class="honor-card" role="button" tabindex="0" aria-label="查看 ${honor.title}" onclick="openHonorLightbox(${i})" onkeydown="if(event.key==='Enter')openHonorLightbox(${i})">
+                    <div class="honor-card-img">
+                        ${imgSrc
+                            ? `<img src="${imgSrc}" alt="${honor.title}" loading="lazy" onerror="this.parentElement.innerHTML='<div class=honor-img-placeholder><i class=fas\ ${typeIcon}></i></div>'">`
+                            : `<div class="honor-img-placeholder"><i class="fas ${typeIcon}"></i></div>`
+                        }
+                        ${honor.pdf ? `<div class="honor-pdf-badge"><i class="fas fa-file-pdf"></i></div>` : ''}
+                        <div class="honor-card-overlay">
+                            <i class="fas fa-search-plus"></i>
+                            <span>点击查看</span>
+                        </div>
+                    </div>
+                    <div class="honor-card-info">
+                        <span class="honor-type-badge honor-type-${honor.type || 'award'}">${typeLabel}</span>
+                        <h4 class="honor-card-title">${honor.title}</h4>
+                        ${honor.year ? `<span class="honor-card-year">${honor.year}</span>` : ''}
+                        ${honor.description ? `<p class="honor-card-desc">${honor.description}</p>` : ''}
+                    </div>
+                </div>
+            </div>`;
+        }).join('');
+    }
+
+    function buildDots() {
+        const pageCount = Math.ceil(honors.length / ITEMS_PER_VIEW);
+        dotsContainer.innerHTML = Array.from({ length: pageCount }, (_, i) =>
+            `<button class="honor-dot${i === 0 ? ' active' : ''}" data-page="${i}" aria-label="第${i + 1}页" onclick="goToPage(${i})"></button>`
+        ).join('');
+    }
+
+    function getSlideWidth() {
+        const slide = track.querySelector('.honor-slide');
+        return slide ? slide.offsetWidth + parseInt(getComputedStyle(slide).marginRight || 0) : 0;
+    }
+
+    function goToPage(page) {
+        const perView = getHonorItemsPerView();
+        const pageCount = Math.ceil(honors.length / perView);
+        currentIndex = Math.max(0, Math.min(page, pageCount - 1));
+        const offset = currentIndex * perView * getSlideWidth();
+        track.style.transform = `translateX(-${offset}px)`;
+        document.querySelectorAll('.honor-dot').forEach((d, i) => d.classList.toggle('active', i === currentIndex));
+        resetAutoPlay();
+    }
+
+    window.goToPage = goToPage;
+
+    function goNext() {
+        const perView = getHonorItemsPerView();
+        const pageCount = Math.ceil(honors.length / perView);
+        goToPage((currentIndex + 1) % pageCount);
+    }
+
+    function goPrev() {
+        const perView = getHonorItemsPerView();
+        const pageCount = Math.ceil(honors.length / perView);
+        goToPage((currentIndex - 1 + pageCount) % pageCount);
+    }
+
+    function resetAutoPlay() {
+        clearInterval(autoTimer);
+        if (honors.length > getHonorItemsPerView()) {
+            autoTimer = setInterval(goNext, 4000);
+        }
+    }
+
+    buildSlides();
+    buildDots();
+
+    const prevBtn = document.getElementById('honorsPrev');
+    const nextBtn = document.getElementById('honorsNext');
+    if (prevBtn) prevBtn.onclick = goPrev;
+    if (nextBtn) nextBtn.onclick = goNext;
+
+    // Show/hide nav buttons based on item count
+    const showNav = honors.length > ITEMS_PER_VIEW;
+    if (prevBtn) prevBtn.style.display = showNav ? '' : 'none';
+    if (nextBtn) nextBtn.style.display = showNav ? '' : 'none';
+    if (dotsContainer) dotsContainer.style.display = Math.ceil(honors.length / ITEMS_PER_VIEW) > 1 ? '' : 'none';
+
+    // Touch/swipe support
+    let touchStartX = 0;
+    const viewport = document.getElementById('honorsViewport');
+    if (viewport) {
+        viewport.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, { passive: true });
+        viewport.addEventListener('touchend', e => {
+            const diff = touchStartX - e.changedTouches[0].clientX;
+            if (Math.abs(diff) > 40) diff > 0 ? goNext() : goPrev();
+        });
+    }
+
+    resetAutoPlay();
+
+    // Pause on hover
+    track.addEventListener('mouseenter', () => clearInterval(autoTimer));
+    track.addEventListener('mouseleave', resetAutoPlay);
+
+    // Setup lightbox
+    setupHonorsLightbox(honors);
+}
+
+function getHonorItemsPerView() {
+    if (window.innerWidth < 600) return 1;
+    if (window.innerWidth < 900) return 2;
+    if (window.innerWidth < 1200) return 3;
+    return 4;
+}
+
+function setupHonorsLightbox(honors) {
+    const lightbox = document.getElementById('honorsLightbox');
+    const backdrop = document.getElementById('honorsLightboxBackdrop');
+    const closeBtn = document.getElementById('honorsLightboxClose');
+    const titleEl = document.getElementById('honorsLightboxTitle');
+    const downloadLink = document.getElementById('honorsLightboxDownload');
+    const body = document.getElementById('honorsLightboxBody');
+    if (!lightbox) return;
+
+    function closeLightbox() {
+        lightbox.classList.remove('active');
+        document.body.style.overflow = '';
+        if (body) body.innerHTML = '';
+    }
+
+    window.openHonorLightbox = function(index) {
+        const honor = honors[index];
+        if (!honor) return;
+        if (titleEl) titleEl.textContent = honor.title + (honor.year ? `  ${honor.year}` : '');
+        if (downloadLink) {
+            if (honor.pdf) {
+                downloadLink.href = honor.pdf;
+                downloadLink.style.display = '';
+            } else {
+                downloadLink.style.display = 'none';
+            }
+        }
+        if (body) {
+            if (honor.pdf) {
+                body.innerHTML = `<iframe src="${honor.pdf}" title="${honor.title}" class="honors-pdf-viewer"></iframe>`;
+            } else if (honor.image) {
+                body.innerHTML = `<img src="${honor.image}" alt="${honor.title}" class="honors-img-viewer">`;
+            } else {
+                body.innerHTML = `<div class="honors-no-preview"><i class="fas fa-file-alt"></i><p>暂无预览文件</p></div>`;
+            }
+        }
+        lightbox.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    };
+
+    if (backdrop) backdrop.addEventListener('click', closeLightbox);
+    if (closeBtn) closeBtn.addEventListener('click', closeLightbox);
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape' && lightbox.classList.contains('active')) closeLightbox();
+    });
 }
 
 function updateContactInfo(profile) {

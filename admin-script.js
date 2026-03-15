@@ -30,6 +30,8 @@ document.addEventListener('DOMContentLoaded', function() {
     window.removePatent = removePatent;
     window.addProject = addProject;
     window.removeProject = removeProject;
+    window.addHonor = addHonor;
+    window.removeHonor = removeHonor;
     window.previewData = previewData;
     window.copyToClipboard = copyToClipboard;
     window.saveToGitHub = saveToGitHub;
@@ -39,6 +41,10 @@ document.addEventListener('DOMContentLoaded', function() {
     window.syncPdfHintFromInput = syncPdfHintFromInput;
     window.uploadPublicationPdf = uploadPublicationPdf;
     window.uploadPatentPdf = uploadPatentPdf;
+    window.uploadHonorPdf = uploadHonorPdf;
+    window.uploadHonorImage = uploadHonorImage;
+    window.handleHonorFileSelection = handleHonorFileSelection;
+    window.syncHonorHintFromInput = syncHonorHintFromInput;
 });
 
 function initializeNavigation() {
@@ -181,6 +187,7 @@ async function loadData() {
         populatePublications();
         populatePatents();
         populateProjects();
+        populateHonors();
         populateAi();
     } catch (error) {
         console.error('加载数据失败:', error);
@@ -678,6 +685,225 @@ function removeProject(index) {
     }
 }
 
+// ==================== HONORS ====================
+
+function populateHonors() {
+    const list = document.getElementById('honorsList');
+    if (!list) return;
+    list.innerHTML = '';
+    (data.honors || []).forEach((honor, index) => {
+        const card = createHonorCard(honor, index);
+        list.appendChild(card);
+    });
+}
+
+function getHonorFileInputId(field, index) {
+    return `honorFile-${field}-${index}`;
+}
+
+function getHonorFileNameId(field, index) {
+    return `honorFileName-${field}-${index}`;
+}
+
+function handleHonorFileSelection(field, index, input) {
+    const label = document.getElementById(getHonorFileNameId(field, index));
+    const selectedName = input?.files?.[0]?.name || '';
+    if (label) {
+        label.textContent = selectedName || extractFileName(input?.closest('.item-card')?.querySelector(`[data-field="${field}"]`)?.value) || '未选择文件';
+        label.classList.toggle('has-file', Boolean(selectedName));
+    }
+}
+
+function syncHonorHintFromInput(field, index, input) {
+    const label = document.getElementById(getHonorFileNameId(field, index));
+    if (label) {
+        const name = extractFileName(input?.value);
+        label.textContent = name || '未选择文件';
+        label.classList.toggle('has-file', Boolean(name));
+    }
+}
+
+function createHonorCard(honor, index) {
+    const card = document.createElement('div');
+    card.className = 'item-card';
+    card.dataset.index = index;
+    const pdfName = getPdfDisplayName(honor.pdf);
+    const imgName = extractFileName(honor.image) || '未选择文件';
+
+    card.innerHTML = `
+        <div class="item-header">
+            <div class="item-title">${escapeHtml(honor.title) || '新荣誉'}</div>
+            <div class="item-actions">
+                <button class="btn btn-delete" onclick="removeHonor(${index})">
+                    <i class="fas fa-trash"></i> 删除
+                </button>
+            </div>
+        </div>
+        <div class="item-body">
+            <div class="item-form-row">
+                <div class="item-form-group">
+                    <label>年份</label>
+                    <input type="number" value="${escapeHtml(honor.year)}" data-field="year" placeholder="2024">
+                </div>
+                <div class="item-form-group">
+                    <label>类型</label>
+                    <select data-field="type">
+                        <option value="award" ${honor.type === 'award' ? 'selected' : ''}>奖励</option>
+                        <option value="certificate" ${honor.type === 'certificate' ? 'selected' : ''}>证书</option>
+                        <option value="appointment" ${honor.type === 'appointment' ? 'selected' : ''}>聘书</option>
+                    </select>
+                </div>
+            </div>
+            <div class="item-form-group">
+                <label>荣誉名称</label>
+                <input type="text" value="${escapeHtml(honor.title)}" data-field="title" placeholder="例：全国遥感大赛一等奖">
+            </div>
+            <div class="item-form-group">
+                <label>展示描述（可选）</label>
+                <input type="text" value="${escapeHtml(honor.description)}" data-field="description" placeholder="简短说明，显示在卡片下方">
+            </div>
+            <div class="item-form-group">
+                <label>PDF 路径 / 托管地址</label>
+                <input type="text" value="${escapeHtml(honor.pdf)}" data-field="pdf" placeholder="可粘贴外部链接，或使用下方按钮上传" oninput="syncHonorHintFromInput('pdf', ${index}, this)">
+            </div>
+            <div class="item-form-group asset-upload-group">
+                <label>上传荣誉 PDF（证书、授户书等）</label>
+                <div class="asset-upload-row">
+                    <input type="file" id="${getHonorFileInputId('pdf', index)}" class="asset-file-input" accept=".pdf,application/pdf" onchange="handleHonorFileSelection('pdf', ${index}, this)">
+                    <label for="${getHonorFileInputId('pdf', index)}" class="asset-file-display">
+                        <span class="asset-file-display-trigger"><i class="fas fa-file-pdf"></i> 选择PDF</span>
+                        <span id="${getHonorFileNameId('pdf', index)}" class="asset-file-display-name ${honor.pdf ? 'has-file' : ''}">${escapeHtml(pdfName)}</span>
+                    </label>
+                    <button type="button" class="btn btn-secondary asset-upload-btn" onclick="uploadHonorPdf(${index}, this)">
+                        <i class="fas fa-upload"></i> 上传PDF
+                    </button>
+                </div>
+                <small class="asset-upload-help">文件会托管到仓库的 pdfs/honors 目录。上传成功后自动回填链接，完成后请点击“保存到GitHub”写入 data.json。</small>
+            </div>
+            <div class="item-form-group">
+                <label>缩略图路径 / 托管地址（轮播展示）</label>
+                <input type="text" value="${escapeHtml(honor.image)}" data-field="image" placeholder="可粘贴外部图片链接，或使用下方按钮上传" oninput="syncHonorHintFromInput('image', ${index}, this)">
+            </div>
+            <div class="item-form-group asset-upload-group">
+                <label>上传缩略图（PNG/JPG，建议封面截图）</label>
+                <div class="asset-upload-row">
+                    <input type="file" id="${getHonorFileInputId('image', index)}" class="asset-file-input" accept="image/*" onchange="handleHonorFileSelection('image', ${index}, this)">
+                    <label for="${getHonorFileInputId('image', index)}" class="asset-file-display">
+                        <span class="asset-file-display-trigger"><i class="fas fa-image"></i> 选择图片</span>
+                        <span id="${getHonorFileNameId('image', index)}" class="asset-file-display-name ${honor.image ? 'has-file' : ''}">${escapeHtml(imgName)}</span>
+                    </label>
+                    <button type="button" class="btn btn-secondary asset-upload-btn" onclick="uploadHonorImage(${index}, this)">
+                        <i class="fas fa-upload"></i> 上传图片
+                    </button>
+                </div>
+                <small class="asset-upload-help">图片会托管到仓库的 img/honors 目录。上传成功后自动回填路径。</small>
+            </div>
+        </div>
+    `;
+    return card;
+}
+
+function addHonor() {
+    const newHonor = {
+        id: 'hon' + String(Date.now()).slice(-6),
+        title: '',
+        year: new Date().getFullYear(),
+        type: 'award',
+        description: '',
+        pdf: '',
+        image: ''
+    };
+    if (!data.honors) data.honors = [];
+    data.honors.unshift(newHonor);
+    populateHonors();
+    showToast('已添加新荣誉条目', 'success');
+}
+
+function removeHonor(index) {
+    if (confirm('确定要删除这条荣誉记录吗？')) {
+        data.honors.splice(index, 1);
+        populateHonors();
+        showToast('荣誉记录已删除', 'success');
+    }
+}
+
+async function uploadHonorPdf(index, button) {
+    return uploadHonorAsset('pdf', index, button);
+}
+
+async function uploadHonorImage(index, button) {
+    return uploadHonorAsset('image', index, button);
+}
+
+async function uploadHonorAsset(field, index, button) {
+    if (!githubConfig.token) {
+        showToast('请先配置GitHub Token', 'error');
+        openModal('configModal');
+        return;
+    }
+    const fileInputId = getHonorFileInputId(field, index);
+    const fileInput = document.getElementById(fileInputId);
+    const file = fileInput?.files?.[0];
+    if (!file) {
+        showToast('请先选择文件', 'error');
+        return;
+    }
+    const isPdf = field === 'pdf';
+    if (isPdf && !/\.pdf$/i.test(file.name) && file.type !== 'application/pdf') {
+        showToast('仅支持上传 PDF 文件', 'error');
+        return;
+    }
+    const honor = data.honors?.[index];
+    if (!honor) { showToast('未找到对应条目，请刷新后重试', 'error'); return; }
+
+    const originalLabel = button ? button.innerHTML : '';
+    if (button) { button.disabled = true; button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 上传中'; }
+
+    try {
+        const repoInfo = await resolveRepoInfo();
+        const fileBase64 = await readFileAsBase64(file);
+        const honId = sanitizeSlug(honor.id || `hon-${Date.now()}`);
+        const ext = file.name.split('.').pop().toLowerCase();
+        const safeName = sanitizeSlug(file.name.replace(/\.\w+$/, '')) || 'file';
+        const relativePath = isPdf
+            ? `pdfs/honors/${honId}-${Date.now()}-${safeName}.pdf`
+            : `img/honors/${honId}-${Date.now()}-${safeName}.${ext}`;
+
+        const response = await fetch(
+            `https://api.github.com/repos/${repoInfo.owner}/${repoInfo.repo}/contents/${relativePath}`,
+            {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `token ${githubConfig.token}`,
+                    'Accept': 'application/vnd.github.v3+json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    message: `上传荣誉${isPdf ? 'PDF' : '图片'} - ${honor.id || file.name}`,
+                    content: fileBase64,
+                    branch: repoInfo.branch
+                })
+            }
+        );
+        if (!response.ok) {
+            const err = await response.json().catch(() => ({}));
+            throw new Error(err.message || '上传失败');
+        }
+        const card = button?.closest('.item-card');
+        const fieldInput = card?.querySelector(`[data-field="${field}"]`);
+        if (fieldInput) fieldInput.value = relativePath;
+        data.honors[index][field] = relativePath;
+        fileInput.value = '';
+        const label = document.getElementById(getHonorFileNameId(field, index));
+        if (label) { label.textContent = extractFileName(relativePath); label.classList.add('has-file'); }
+        showToast(`${isPdf ? 'PDF' : '图片'}已上传到仓库，请继续点击“保存到GitHub”同步数据`, 'success');
+    } catch (err) {
+        showToast('上传失败: ' + err.message, 'error');
+    } finally {
+        if (button) { button.disabled = false; button.innerHTML = originalLabel; }
+    }
+}
+
 async function uploadPublicationPdf(index, button) {
     return uploadPdfAsset('publications', index, button);
 }
@@ -952,6 +1178,16 @@ function collectData() {
                 } else {
                     data.projects[index][field] = input.value;
                 }
+            });
+        }
+    });
+
+    document.querySelectorAll('#honorsList .item-card').forEach(card => {
+        const index = parseInt(card.dataset.index);
+        if (data.honors && data.honors[index]) {
+            const inputs = card.querySelectorAll('[data-field]');
+            inputs.forEach(input => {
+                data.honors[index][input.dataset.field] = input.tagName === 'SELECT' ? input.value : input.value;
             });
         }
     });

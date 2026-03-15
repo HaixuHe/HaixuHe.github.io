@@ -37,6 +37,10 @@
                     <i class="fas fa-project-diagram"></i>
                     <span>项目经历</span>
                 </a>
+                <a href="#honors" class="nav-item" data-section="honors">
+                    <i class="fas fa-trophy"></i>
+                    <span>荣誉与奖励</span>
+                </a>
                 <a href="#stats" class="nav-item" data-section="stats">
                     <i class="fas fa-chart-bar"></i>
                     <span>统计数据</span>
@@ -198,6 +202,22 @@
                         </button>
                     </div>
                     <div id="projectsList" class="items-list"></div>
+                </section>
+
+                <section id="honors" class="section">
+                    <h2 class="section-title">荣誉与奖励</h2>
+                    <div class="section-actions">
+                        <button class="btn btn-add" onclick="addHonor()">
+                            <i class="fas fa-plus"></i> 添加荣誉
+                        </button>
+                    </div>
+                    <div class="alert alert-info" style="margin-bottom: 16px; font-size: 0.88rem;">
+                        <i class="fas fa-info-circle"></i>
+                        <div>
+                            <p>**上传说明：** 可上传 PDF（比赛证书、荣誉证书等）和缩略图和（封面截图）。轮播图会展示缩略图，点击后可在弹框中阅读完整 PDF。</p>
+                        </div>
+                    </div>
+                    <div id="honorsList" class="items-list"></div>
                 </section>
 
                 <section id="stats" class="section">

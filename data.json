@@ -140,12 +140,14 @@
     },
     {
       "id": "pat509318",
-      "title": "",
-      "patentNumber": "",
-      "status": "pending",
-      "statusText": "审查中",
-      "inventors": [],
-      "year": "2026"
+      "title": "土地覆盖变化监测方法、模型训练方法及相关装置",
+      "patentNumber": "ZL 2024 1 1930928.X",
+      "status": "granted",
+      "statusText": "已授权",
+      "inventors": [
+        "阎继宁;贺海旭;王力哲;龙旭;宋维静;韩伟"
+      ],
+      "year": "2025"
     }
   ],
   "projects": [],

@@ -14,26 +14,7 @@
     "university": "中国地质大学（武汉）",
     "department": "未来技术学院",
     "lab": "",
-    "education": [
-      {
-        "degree": "博士",
-        "major": "地质资源与地质工程",
-        "school": "中国地质大学（武汉）",
-        "year": "2023-至今"
-      },
-      {
-        "degree": "硕士",
-        "major": "计算机技术",
-        "school": "中国地质大学（武汉）",
-        "year": "2020-2023"
-      },
-      {
-        "degree": "学士",
-        "major": "土地资源管理",
-        "school": "中国地质大学（武汉）",
-        "year": "2016-2020"
-      }
-    ],
+    "education": [],
     "researchInterests": [
       "遥感图像智能解译",
       "深度学习与计算机视觉",

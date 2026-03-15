@@ -155,7 +155,17 @@
     }
   ],
   "projects": [],
-  "honors": [],
+  "honors": [
+    {
+      "id": "hon349480",
+      "title": "“地质一号”卫星数据处理主管设计师",
+      "year": "2023",
+      "type": "appointment",
+      "description": "",
+      "pdf": "pdfs/honors/hon349480-1773586375333-file.pdf",
+      "image": "img/honors/hon349480-1773586412062-_20260315225312_728_65.png"
+    }
+  ],
   "ai": {
     "apiKey": "sk-yfmngijulkxmholdxeaacanoyitzmkckluvhqkwzaywriwio",
     "systemPrompt": "",

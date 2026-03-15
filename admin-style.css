@@ -453,10 +453,60 @@ body {
 }
 
 .asset-file-input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.asset-file-display {
     flex: 1;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
     padding: 8px 10px;
     border: 1px dashed var(--border-color);
+    border-radius: var(--border-radius);
     background: var(--bg-light);
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.asset-file-input:focus + .asset-file-display {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(26, 95, 122, 0.12);
+}
+
+.asset-file-display:hover {
+    border-color: var(--primary-light);
+    background: #f1f7f9;
+}
+
+.asset-file-display-trigger {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+    color: var(--primary-color);
+    font-weight: 500;
+}
+
+.asset-file-display-name {
+    min-width: 0;
+    color: var(--text-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.asset-file-display-name.has-file {
+    color: var(--text-dark);
 }
 
 .asset-upload-btn {

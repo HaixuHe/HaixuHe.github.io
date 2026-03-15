@@ -35,6 +35,8 @@ document.addEventListener('DOMContentLoaded', function() {
     window.saveToGitHub = saveToGitHub;
     window.showToast = showToast;
     window.updateCitations = updateCitations;
+    window.handlePdfFileSelection = handlePdfFileSelection;
+    window.syncPdfHintFromInput = syncPdfHintFromInput;
     window.uploadPublicationPdf = uploadPublicationPdf;
     window.uploadPatentPdf = uploadPatentPdf;
 });
@@ -310,10 +312,76 @@ function populatePublications() {
     });
 }
 
+function getPdfFileInputId(collection, index) {
+    return collection === 'publications'
+        ? `publicationPdfFile-${index}`
+        : `patentPdfFile-${index}`;
+}
+
+function getPdfFileNameId(collection, index) {
+    return collection === 'publications'
+        ? `publicationPdfName-${index}`
+        : `patentPdfName-${index}`;
+}
+
+function extractFileName(filePath) {
+    const normalizedPath = String(filePath || '').trim();
+    if (!normalizedPath) return '';
+
+    const pathWithoutQuery = normalizedPath.split(/[?#]/)[0];
+    const segments = pathWithoutQuery.split(/[\\/]/).filter(Boolean);
+    const fileName = segments.pop() || '';
+
+    try {
+        return decodeURIComponent(fileName);
+    } catch (error) {
+        return fileName;
+    }
+}
+
+function getPdfDisplayName(filePath) {
+    return extractFileName(filePath) || '未选择文件';
+}
+
+function escapeHtml(value) {
+    return String(value || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
+function setPdfFileNameLabel(collection, index, fileName) {
+    const label = document.getElementById(getPdfFileNameId(collection, index));
+    if (!label) return;
+
+    const displayName = fileName || '未选择文件';
+    label.textContent = displayName;
+    label.classList.toggle('has-file', Boolean(fileName));
+}
+
+function syncPdfHintFromInput(collection, index, input) {
+    setPdfFileNameLabel(collection, index, extractFileName(input?.value));
+}
+
+function handlePdfFileSelection(collection, index, input) {
+    const selectedFileName = input?.files?.[0]?.name || '';
+    if (selectedFileName) {
+        setPdfFileNameLabel(collection, index, selectedFileName);
+        return;
+    }
+
+    const card = input?.closest('.item-card');
+    const pdfInput = card?.querySelector('[data-field="pdf"]');
+    setPdfFileNameLabel(collection, index, extractFileName(pdfInput?.value));
+}
+
 function createPublicationCard(pub, index) {
     const card = document.createElement('div');
     card.className = 'item-card';
     card.dataset.index = index;
+    const existingPdfName = getPdfDisplayName(pub.pdf);
     
     card.innerHTML = `
         <div class="item-header">
@@ -357,13 +425,17 @@ function createPublicationCard(pub, index) {
                 </div>
                 <div class="item-form-group">
                     <label>PDF链接 / 托管地址</label>
-                    <input type="url" value="${pub.pdf || ''}" data-field="pdf" placeholder="可粘贴外部链接，或使用下方按钮上传到 GitHub 仓库">
+                    <input type="url" value="${pub.pdf || ''}" data-field="pdf" placeholder="可粘贴外部链接，或使用下方按钮上传到 GitHub 仓库" oninput="syncPdfHintFromInput('publications', ${index}, this)">
                 </div>
             </div>
             <div class="item-form-group asset-upload-group">
                 <label>上传论文 PDF</label>
                 <div class="asset-upload-row">
-                    <input type="file" id="publicationPdfFile-${index}" class="asset-file-input" accept=".pdf,application/pdf">
+                    <input type="file" id="${getPdfFileInputId('publications', index)}" class="asset-file-input" accept=".pdf,application/pdf" onchange="handlePdfFileSelection('publications', ${index}, this)">
+                    <label for="${getPdfFileInputId('publications', index)}" class="asset-file-display">
+                        <span class="asset-file-display-trigger"><i class="fas fa-file-pdf"></i> 选择文件</span>
+                        <span id="${getPdfFileNameId('publications', index)}" class="asset-file-display-name ${pub.pdf ? 'has-file' : ''}">${escapeHtml(existingPdfName)}</span>
+                    </label>
                     <button type="button" class="btn btn-secondary asset-upload-btn" onclick="uploadPublicationPdf(${index}, this)">
                         <i class="fas fa-upload"></i> 上传到仓库
                     </button>
@@ -437,6 +509,7 @@ function createPatentCard(patent, index) {
     const card = document.createElement('div');
     card.className = 'item-card';
     card.dataset.index = index;
+    const existingPdfName = getPdfDisplayName(patent.pdf);
     
     card.innerHTML = `
         <div class="item-header">
@@ -471,12 +544,16 @@ function createPatentCard(patent, index) {
             </div>
             <div class="item-form-group">
                 <label>PDF链接 / 托管地址</label>
-                <input type="url" value="${patent.pdf || ''}" data-field="pdf" placeholder="可粘贴外部链接，或上传专利说明书 PDF">
+                <input type="url" value="${patent.pdf || ''}" data-field="pdf" placeholder="可粘贴外部链接，或上传专利说明书 PDF" oninput="syncPdfHintFromInput('patents', ${index}, this)">
             </div>
             <div class="item-form-group asset-upload-group">
                 <label>上传专利 PDF</label>
                 <div class="asset-upload-row">
-                    <input type="file" id="patentPdfFile-${index}" class="asset-file-input" accept=".pdf,application/pdf">
+                    <input type="file" id="${getPdfFileInputId('patents', index)}" class="asset-file-input" accept=".pdf,application/pdf" onchange="handlePdfFileSelection('patents', ${index}, this)">
+                    <label for="${getPdfFileInputId('patents', index)}" class="asset-file-display">
+                        <span class="asset-file-display-trigger"><i class="fas fa-file-pdf"></i> 选择文件</span>
+                        <span id="${getPdfFileNameId('patents', index)}" class="asset-file-display-name ${patent.pdf ? 'has-file' : ''}">${escapeHtml(existingPdfName)}</span>
+                    </label>
                     <button type="button" class="btn btn-secondary asset-upload-btn" onclick="uploadPatentPdf(${index}, this)">
                         <i class="fas fa-upload"></i> 上传到仓库
                     </button>
@@ -616,9 +693,7 @@ async function uploadPdfAsset(collection, index, button) {
         return;
     }
 
-    const fileInputId = collection === 'publications'
-        ? `publicationPdfFile-${index}`
-        : `patentPdfFile-${index}`;
+    const fileInputId = getPdfFileInputId(collection, index);
     const fileInput = document.getElementById(fileInputId);
     const file = fileInput?.files?.[0];
 
@@ -676,6 +751,7 @@ async function uploadPdfAsset(collection, index, button) {
         if (pdfInput) pdfInput.value = relativePath;
         data[collection][index].pdf = relativePath;
         fileInput.value = '';
+        setPdfFileNameLabel(collection, index, extractFileName(relativePath));
         showToast('PDF 已上传到仓库，请继续点击“保存到GitHub”同步数据', 'success');
     } catch (error) {
         showToast('PDF 上传失败: ' + error.message, 'error');

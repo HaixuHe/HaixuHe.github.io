@@ -442,6 +442,18 @@ body {
     color: white;
 }
 
+.pub-citations {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    background: #fef3c7;
+    color: #92400e;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    margin-left: auto;
+}
+
 .pub-abstract {
     margin-top: 8px;
     padding: 12px;

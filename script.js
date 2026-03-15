@@ -137,6 +137,7 @@ function renderPublications() {
                     ${pub.pdf ? `<a href="${pub.pdf}" class="pub-link" target="_blank" rel="noopener noreferrer"><i class="fas fa-file-pdf"></i> PDF</a>` : ''}
                     ${pub.code ? `<a href="${pub.code}" class="pub-link" target="_blank" rel="noopener noreferrer"><i class="fas fa-code"></i> Code</a>` : ''}
                     ${pub.abstract ? `<button class="pub-abstract-toggle" onclick="toggleAbstract(${index})"><i class="fas fa-chevron-down"></i> 查看摘要</button>` : ''}
+                    ${(pub.citations > 0) ? `<span class="pub-citations" title="引用次数"><i class="fas fa-quote-right"></i> 被引用 ${pub.citations} 次</span>` : ''}
                 </div>
                 ${pub.abstract ? `
                 <div class="pub-abstract" id="abstract-${index}" style="display: none;">

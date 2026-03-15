@@ -31,6 +31,7 @@
 
         document.getElementById('aiChatBtn').addEventListener('click', togglePanel);
         document.getElementById('aiCloseBtn').addEventListener('click', togglePanel);
+        document.getElementById('aiOverlay').addEventListener('click', togglePanel);
         document.getElementById('aiClearBtn').addEventListener('click', clearChat);
         document.getElementById('aiSendBtn').addEventListener('click', sendMessage);
         document.getElementById('aiPromptList').addEventListener('click', handlePromptPresetClick);
@@ -50,6 +51,7 @@
     function togglePanel() {
         state.open = !state.open;
         document.getElementById('aiChatPanel').classList.toggle('open', state.open);
+        document.getElementById('aiOverlay').classList.toggle('active', state.open);
         if (state.open) document.getElementById('aiChatInput').focus();
     }
 
@@ -57,7 +59,22 @@
         state.messages = [];
         hydrateChatUi();
     }
+    /* ── Title helpers ────────────────────────────── */
 
+    function setTitleTyping() {
+        const title = document.querySelector('.ai-chat-title');
+        const el = document.getElementById('aiChatTitleText');
+        if (title) title.classList.add('is-typing');
+        if (el) el.textContent = '对方正在输入…';
+    }
+
+    function setTitleNormal() {
+        const name = state.siteData?.profile?.name || '贺海旭';
+        const title = document.querySelector('.ai-chat-title');
+        const el = document.getElementById('aiChatTitleText');
+        if (title) title.classList.remove('is-typing');
+        if (el) el.textContent = `与${name}的聊天`;
+    }
     /* ── System prompt ───────────────────────────────── */
 
     function buildSystemPrompt() {
@@ -128,6 +145,7 @@ ${JSON.stringify(data, null, 2)}
             '<span class="ai-thinking"><span></span><span></span><span></span></span>', ''
         );
         document.getElementById('aiSendBtn').disabled = true;
+        setTitleTyping();
 
         const payload = {
             model: SF_MODEL,
@@ -197,13 +215,20 @@ ${JSON.stringify(data, null, 2)}
             restorePromptList(promptVersion, buildAchievementFallbackPrompts(text));
         } finally {
             document.getElementById('aiSendBtn').disabled = false;
+            setTitleNormal();
         }
     }
 
     /* ── DOM helpers ─────────────────────────────────── */
 
     function hydrateChatUi() {
-        document.getElementById('aiChatMessages').innerHTML = welcomeHtml();
+        const container = document.getElementById('aiChatMessages');
+        const promptList = document.getElementById('aiPromptList');
+        if (promptList && promptList.parentNode === container) {
+            container.removeChild(promptList);
+        }
+        container.innerHTML = welcomeHtml();
+        if (promptList) container.appendChild(promptList);
         state.promptVersion += 1;
         renderPromptList(getQuickPrompts());
     }
@@ -397,7 +422,8 @@ ${JSON.stringify(data, null, 2)}
         el.id = id;
         el.className = 'ai-chat-msg user-msg';
         el.innerHTML = `<div class="ai-bubble">${escHtml(text).replace(/\n/g, '<br>')}</div>`;
-        container.appendChild(el);
+        const promptList = document.getElementById('aiPromptList');
+        container.insertBefore(el, promptList || null);
         container.scrollTop = container.scrollHeight;
         return id;
     }
@@ -412,7 +438,8 @@ ${JSON.stringify(data, null, 2)}
         el.innerHTML =
             `<div class="ai-avatar"><img src="img/avatar/hhx.png" alt="${escHtml(name)}" onerror="this.parentElement.innerHTML='<i class=&quot;fas fa-robot&quot;></i>'"></div>` +
             `<div class="ai-bubble">${html}</div>`;
-        container.appendChild(el);
+        const promptList = document.getElementById('aiPromptList');
+        container.insertBefore(el, promptList || null);
         container.scrollTop = container.scrollHeight;
         return id;
     }

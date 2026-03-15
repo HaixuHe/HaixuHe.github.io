@@ -27,6 +27,27 @@
   },
   "publications": [
     {
+      "id": "pub814505",
+      "year": "2022",
+      "type": "journal",
+      "title": "Inter-Comparison of Four Models for Detecting Forest Fire Disturbance from MOD13A2 Time Series",
+      "authors": [
+        "Jining Yan",
+        "Haixu He",
+        "Lizhe Wang",
+        "Hao Zhang",
+        "Dong Liang",
+        "Junqiang Zhang"
+      ],
+      "journal": "Remote Sensing",
+      "doi": "https://doi.org/10.3390/rs14061446",
+      "pdf": "pdfs/publications/pub814505-1773573935226-yan-2022-inter-comparison-of-four-models-for-detecting-fore.pdf",
+      "code": "https://github.com/CUG-BEODL/CUG-FFireMCD",
+      "highlight": false,
+      "abstract": "Many models for change point detection from time series remote sensing images have been developed to date. For forest ecosystems, ﬁre disturbance detection models have always been an important topic. However, due to a lack of benchmark datasets, it is difﬁcult to determine which model is appropriate. Therefore, we collected and generated a benchmark dataset speciﬁcally for forest ﬁre disturbance detection, named CUG-FFireMCD1. The CUG-FFireMCD1 contains a total of 132 pieces of MODIS MOD13A2 time series, and each time series contains at least one ﬁre disturbance. The occurrence time for a forest ﬁre disturbance was determined using the National Cryosphere DesertDataCenter(NCDC) website, and the precise latitude and longitude coordinates were determined using the FireCCI51 dataset. In addition, we selected four commonly used time series change detection models and validate the advantages and limitations of the four models through dataset analysis. Finally, we use the detection results of the models and their applicable scenarios to label the additional change points. The four models we used are breaks for additive season and trend (BFAST), Prophet, continuous change detection and classiﬁcation (CCDC), and Landsat-based detection of trends in disturbance and recovery (LandTrendR). The experiments show that the BFAST outperformed the other three models in forest ﬁre disturbance detection from MOD13A2 time series, with the successful-detection-proportion rate of 96.2% with the benchmark dataset. The detection effect of the Prophet model is not as good as that of BFAST, but it also performs well, with the successful-detection-proportion rate of 87.9%. The detection results of CCDC and LandTrendR are similar, and the detection success rate is lower than that of BFAST and Prophet, but their detection results can be used as data support for labeling work. However, to apply them perfectly to MOD13A2 time series change detection, it is best to do some model adaptation. In summary, the CUG-FFireMCD1 data were veriﬁed using different types of time series change detection models, and the change points we marked are credible. The CUG-FFireMCD1 will surely provide a reliable benchmark for model optimization and the accuracy veriﬁcation of remote sensing time series change detection.",
+      "citations": 21
+    },
+    {
       "id": "pub231151",
       "year": "2024",
       "type": "conference",
@@ -37,7 +58,7 @@
       ],
       "journal": "2024 IEEE International Conference on Signal, Information and Data Processing (ICSIDP)",
       "doi": "https://doi.org/10.1109/ICSIDP62679.2024.10869169",
-      "pdf": "",
+      "pdf": "pdfs/publications/pub231151-1773573797532-he-yan-2024-continuous-semantic-change-monitoring-of-land-cover-with-landsat-time-series.pdf",
       "code": "",
       "highlight": false,
       "abstract": "Rapid urbanization has led to frequent land cover changes, making continuous monitoring essential for capturing land use dynamics and enabling quick responses. It is crucial to detect both the dates and types of these changes, which current change detection models struggle to achieve simultaneously. In this study, we propose a supervised approach called Temporal Semantic Recognition Change Detection (TSRCD), using a Transformer-based sliding detector to learn mappings from spectral data to land cover changes over time. During monitoring, the model utilizes previously detected land cover types and additional observations as dual prompts to iteratively predict the next time point’s land cover type. We validated our approach using all clear Landsat data from the Wuhan urban agglomeration between 2008 and 2022. Experiments show that increasing the peek window size improves change detection accuracy, stabilizing at around ten, with an approximate 8% improvement in F1 score compared to CCDC. TSRCD not only tracks the dates of land cover changes but also accurately identifies change types, achieving 92% accuracy. In summary, TSRCD provides a novel and comprehensive solution for monitoring land cover changes using long-term series remote sensing data.",
@@ -58,7 +79,7 @@
       ],
       "journal": "IEEE Transactions on Geoscience and Remote Sensing",
       "doi": "https://doi.org/10.1109/TGRS.2022.3140436",
-      "pdf": "",
+      "pdf": "pdfs/publications/pub465798-1773574121981-he-2022-bayesian-temporal-tensor-factorization-based-inter_compressed-1.pdf",
       "code": "https://github.com/HaixuHe/HTR-BTTF",
       "highlight": false,
       "abstract": "Land surface temperature (LST) is widely used in the ﬁeld of time-series remote sensing. However, due to the inﬂuence of cloud cover, the large area of LST data observation is missing, which seriously affects the later data analysis. In the past research, various effective interpolation methods have been developed, but they usually cannot effectively interpolate the image data with large observation missing. In this article, a new method for interpolating these missing data called Hilbert tensor rearrangement with Bayesian temporal tensor factorization (HTR-BTTF) is proposed. This method requires tensor rearrangement of remote sensing data, combined with BTTF method for interpolation. In order to evaluate the performance of our method, we select three real study areas with different climates, Wuhan, Harbin, and Kunming LST data during day and night, and add cloud covers with different sizes to the cold and warm season layers each year. BTTF, inverse distance weighted (IDW), harmonic analysis of time series (HANTS), and GapFill are used as comparison methods. Root-meansquare error (RMSE) is a comprehensive evaluation index of interpolation results. Experiments have shown that HTR-BTTF is an effective method for interpolating missing observations, which is better than other methods. In the simulation experiment of the largest cloud cover size, on average, the RMSE of the data ﬁlled using the HTR-BTTF method was 17.2% lower than that of BTTF and 54.9% lower than that of the GapFill method, and it shows good robustness and high accuracy.",
@@ -79,7 +100,7 @@
       ],
       "journal": "Remote Sensing of Environment",
       "doi": "https://doi.org/10.1016/j.rse.2025.115070",
-      "pdf": "",
+      "pdf": "pdfs/publications/pub228012-1773572543754-he-2026-monthly-monitoring-of-urban-development-and-renewal-at-the-block-level-in-china-using-sentinel-2-tim.pdf",
       "code": "https://github.com/CUG-BEODL/SSC-SB",
       "highlight": true,
       "abstract": "Urban renewal has been elevated to a national strategy in China, leading to rapid development and transformation of street blocks. However, monitoring construction events at high temporal resolution remains challenging due to the limitations of existing methods, which often struggle with noise interference and lack continuous monitoring capabilities. To address this, we propose Semantic Similarity Contrast-based Street Block Monitoring (SSC-SB), a method that leverages Sentinel-2 time series imagery for automated, high-frequency detection of street block development and renewal. By extracting deep semantic features with a pretrained encoder, SSC-SB analyzes similarity curves to identify development and demolition construction events. Applied to the Middle Yangtze River Basin (MYRB) urban agglomeration shows that SSC-SB achieves 90.4% spatial domain accuracy, with construction start and end date detection accuracies of 68.8% and 54.9%, respectively. Results indicate an increasing emphasis on urban renewal, as demolished street blocks outnumbered new developments for the first time in 2023, with Hunan Province leading in renewal efforts, where renewal blocks accounted for 41.5% of all changed street blocks, reflecting a balanced focus on expansion and infrastructure renewal. Transfer experiments in Xi’an further demonstrate that SSC-SB retains up to 80% of the performance of a locally trained model when applied across regions without fine-tuning, indicating a decent level of generalizability. By providing fine-grained, continuous monitoring, SSC-SB presents a scalable solution for tracking urban transformation.",
@@ -112,7 +133,7 @@
       "id": "pat535888",
       "title": "土地覆盖变化监测方法、装置、电子设备及存储介质",
       "patentNumber": "ZL 2023 1 1126526.X",
-      "pdf": "",
+      "pdf": "pdfs/patents/pat535888-1773574290808-2023.pdf",
       "status": "granted",
       "statusText": "已授权",
       "inventors": [
@@ -124,7 +145,7 @@
       "id": "pat509318",
       "title": "土地覆盖变化监测方法、模型训练方法及相关装置",
       "patentNumber": "ZL 2024 1 1930928.X",
-      "pdf": "",
+      "pdf": "pdfs/patents/pat509318-1773574303220-2025-202411930928-x.pdf",
       "status": "granted",
       "statusText": "已授权",
       "inventors": [

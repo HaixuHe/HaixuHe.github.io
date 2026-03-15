@@ -128,19 +128,18 @@ function renderPublications() {
             <div class="pub-year">${pub.year}</div>
             <div class="pub-content">
                 <div class="pub-title-row">
-                    <h3 class="pub-title">${pub.title}</h3>
+                    <h3 class="pub-title">${pub.doi ? `<a href="${pub.doi}" target="_blank" rel="noopener noreferrer" class="pub-title-link">${pub.title}</a>` : pub.title}</h3>
                     <div class="pub-title-tags">
-                        ${pub.highlight ? `<span class="resource-badge highlight"><i class="fas fa-star"></i> 代表论文</span>` : ''}
-                        ${pub.pdf ? `<span class="resource-badge file"><i class="fas fa-file-pdf"></i> PDF</span>` : ''}
+                        ${pub.highlight ? `<span class="resource-badge highlight"><i class="fas fa-star"></i> 高被引论文</span>` : ''}
+                        ${pub.pdf ? `<a href="${pub.pdf}" class="resource-badge file" download><i class="fas fa-file-pdf"></i> PDF</a>` : ''}
                     </div>
                 </div>
-                <p class="pub-authors"><strong>${formatAuthors(pub.authors)}</strong></p>
+                <p class="pub-authors">${formatAuthors(pub.authors)}</p>
                 <p class="pub-journal">
                     <i class="fas ${pub.type === 'journal' ? 'fa-book' : 'fa-calendar-alt'}"></i> ${pub.journal}
                 </p>
                 <div class="pub-actions-row">
                     ${pub.doi ? `<a href="${pub.doi}" class="pub-link" target="_blank" rel="noopener noreferrer"><i class="fas fa-external-link-alt"></i> DOI</a>` : ''}
-                    ${pub.pdf ? `<a href="${pub.pdf}" class="pub-link" download><i class="fas fa-file-arrow-down"></i> 下载PDF</a>` : ''}
                     ${pub.code ? `<a href="${pub.code}" class="pub-link" target="_blank" rel="noopener noreferrer"><i class="fas fa-code"></i> Code</a>` : ''}
                     ${pub.abstract ? `<button class="pub-abstract-toggle" onclick="toggleAbstract(${index})"><i class="fas fa-chevron-down"></i> 查看摘要</button>` : ''}
                     ${(pub.citations > 0) ? `<span class="pub-citations" title="引用次数"><i class="fas fa-quote-right"></i> 被引用 ${pub.citations} 次</span>` : ''}
@@ -176,14 +175,16 @@ function toggleAbstract(index) {
     }
 }
 
+function isSiteOwner(name) {
+    return name.includes('Haixu He') || name.includes('贺海旭') ||
+           name.includes('He, H.') || name.includes('何海旭');
+}
+
 function formatAuthors(authors) {
     if (!authors || authors.length === 0) return '';
-    return authors.map(author => {
-        if (author.includes('He, H.') || author.includes('何海旭')) {
-            return `<strong>${author}</strong>`;
-        }
-        return author;
-    }).join(', ');
+    return authors.map(author =>
+        isSiteOwner(author) ? `<strong>${author}</strong>` : author
+    ).join(', ');
 }
 
 function renderPatents() {
@@ -204,7 +205,7 @@ function renderPatents() {
                     </div>
                 </div>
                 <p class="patent-number">专利号: ${patent.patentNumber}</p>
-                <p class="patent-inventors">发明人: ${(patent.inventors || []).join(', ')}</p>
+                <p class="patent-inventors">发明人: ${(patent.inventors || []).map(name => isSiteOwner(name) ? `<strong>${name}</strong>` : name).join(', ')}</p>
             </div>
         </div>
     `).join('');

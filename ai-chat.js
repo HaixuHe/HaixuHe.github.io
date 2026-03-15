@@ -162,7 +162,7 @@ ${JSON.stringify(data, null, 2)}
     function welcomeHtml() {
         const name = state.siteData?.profile?.name || '我';
         return `<div class="ai-chat-msg ai-msg">
-            <div class="ai-avatar"><i class="fas fa-robot"></i></div>
+            <div class="ai-avatar"><img src="img/avatar/hhx.png" alt="${escHtml(name)}" onerror="this.parentElement.innerHTML='<i class=&quot;fas fa-robot&quot;></i>'"></div>
             <div class="ai-bubble">你好！我是 ${escHtml(name)}，很高兴认识你！你可以问我关于我的研究方向、发表论文、教育背景等任何问题。</div>
         </div>`;
     }
@@ -185,8 +185,9 @@ ${JSON.stringify(data, null, 2)}
         const el = document.createElement('div');
         el.id        = id;
         el.className = 'ai-chat-msg ai-msg' + (extraClass ? ' ' + extraClass : '');
+        const name = state.siteData?.profile?.name || '';
         el.innerHTML =
-            `<div class="ai-avatar"><i class="fas fa-robot"></i></div>` +
+            `<div class="ai-avatar"><img src="img/avatar/hhx.png" alt="${escHtml(name)}" onerror="this.parentElement.innerHTML='<i class=&quot;fas fa-robot&quot;></i>'"></div>` +
             `<div class="ai-bubble">${html}</div>`;
         container.appendChild(el);
         container.scrollTop = container.scrollHeight;

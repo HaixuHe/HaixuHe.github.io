@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1a5f7a"/>
+      <stop offset="100%" stop-color="#159895"/>
+    </linearGradient>
+  </defs>
+  <rect width="32" height="32" rx="6" fill="url(#bg)"/>
+  <!-- satellite body -->
+  <rect x="13" y="12" width="6" height="8" rx="1" fill="white"/>
+  <!-- solar panels left -->
+  <rect x="6" y="14" width="5" height="4" rx="0.5" fill="white" opacity="0.85"/>
+  <!-- solar panels right -->
+  <rect x="21" y="14" width="5" height="4" rx="0.5" fill="white" opacity="0.85"/>
+  <!-- antenna -->
+  <line x1="16" y1="12" x2="16" y2="9" stroke="white" stroke-width="1"/>
+  <circle cx="16" cy="8.5" r="1" fill="white"/>
+</svg>

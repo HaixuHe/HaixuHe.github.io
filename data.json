@@ -1,9 +1,14 @@
 {
+  "site": {
+    "title": "贺海旭 | 遥感博士",
+    "description": "遥感博士个人主页 - 研究领域、论文发表、专利与项目介绍"
+  },
   "profile": {
     "name": "贺海旭",
     "nameEn": "Haixu He",
     "title": "遥感科学与技术 | 博士研究生",
     "description": "专注于遥感图像处理、深度学习与地球观测应用研究",
+    "aboutIntro": "你好！我是贺海旭，专注于遥感图像处理、深度学习与地球观测应用研究，研究方向包括遥感图像智能解译、深度学习与计算机视觉及其在地球观测领域的应用。",
     "email": "20161001925@cug.edu.cn",
     "address": "中国地质大学（武汉）计算机学院",
     "university": "中国地质大学（武汉）",
@@ -36,14 +41,8 @@
     ],
     "socialLinks": {
       "googleScholar": "https://scholar.google.com/citations?user=XXXXX",
-      "researchGate": "https://www.researchgate.net/profile/Haixu-He",
-      "github": "https://github.com/HaixuHe",
-      "linkedin": "https://www.linkedin.com/in/haixuhe",
-      "orcid": "https://orcid.org/0000-0000-0000-0000"
+      "github": "https://github.com/HaixuHe"
     }
-  },
-  "stats": {
-    "citations": 500
   },
   "publications": [
     {

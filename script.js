@@ -29,15 +29,23 @@ function populatePage() {
     document.getElementById('heroTitle').textContent = profile.title || '';
     document.getElementById('heroDescription').textContent = profile.description || '';
 
-    if (profile.socialLinks) {
-        updateLink('linkGoogleScholar', profile.socialLinks.googleScholar);
-        updateLink('linkResearchGate', profile.socialLinks.researchGate);
-        updateLink('linkGithub', profile.socialLinks.github);
-        updateLink('linkLinkedin', profile.socialLinks.linkedin);
+    // Update site meta and title from data.json
+    const site = siteData.site || {};
+    if (site.title) {
+        document.title = site.title;
+    }
+    if (site.description) {
+        const metaDesc = document.getElementById('metaDescription');
+        if (metaDesc) metaDesc.setAttribute('content', site.description);
     }
 
-    const aboutIntro = `你好！我是${profile.name || '贺海旭'}，${profile.description || ''}`;
-    document.getElementById('aboutIntro').textContent = aboutIntro;
+    if (profile.socialLinks) {
+        updateLink('linkGoogleScholar', profile.socialLinks.googleScholar);
+        updateLink('linkGithub', profile.socialLinks.github);
+    }
+
+    document.getElementById('aboutIntro').textContent = profile.aboutIntro ||
+        `你好！我是${profile.name || '贺海旭'}，${profile.description || ''}`;
 
     if (profile.education && profile.education.length > 0) {
         const eduHtml = profile.education.map(e => 
@@ -63,7 +71,6 @@ function populatePage() {
     document.getElementById('statPubs').setAttribute('data-target', autoStats.publications);
     document.getElementById('statPatents').setAttribute('data-target', autoStats.patents);
     document.getElementById('statProjects').setAttribute('data-target', autoStats.projects);
-    document.getElementById('statCitations').setAttribute('data-target', siteData.stats?.citations || 0);
 
     renderPublications();
     renderPatents();
@@ -124,23 +131,18 @@ function renderPublications() {
                 <p class="pub-authors"><strong>${formatAuthors(pub.authors)}</strong></p>
                 <p class="pub-journal">
                     <i class="fas ${pub.type === 'journal' ? 'fa-book' : 'fa-calendar-alt'}"></i> ${pub.journal}
-                    ${pub.citations !== undefined ? `<span class="pub-citations"><i class="fas fa-quote-right"></i> ${pub.citations} 次引用</span>` : ''}
                 </p>
+                <div class="pub-actions-row">
+                    ${pub.doi ? `<a href="${pub.doi}" class="pub-link" target="_blank" rel="noopener noreferrer"><i class="fas fa-external-link-alt"></i> DOI</a>` : ''}
+                    ${pub.pdf ? `<a href="${pub.pdf}" class="pub-link" target="_blank" rel="noopener noreferrer"><i class="fas fa-file-pdf"></i> PDF</a>` : ''}
+                    ${pub.code ? `<a href="${pub.code}" class="pub-link" target="_blank" rel="noopener noreferrer"><i class="fas fa-code"></i> Code</a>` : ''}
+                    ${pub.abstract ? `<button class="pub-abstract-toggle" onclick="toggleAbstract(${index})"><i class="fas fa-chevron-down"></i> 查看摘要</button>` : ''}
+                </div>
                 ${pub.abstract ? `
-                <div class="pub-abstract-section">
-                    <button class="pub-abstract-toggle" onclick="toggleAbstract(${index})">
-                        <i class="fas fa-chevron-down"></i> 查看摘要
-                    </button>
-                    <div class="pub-abstract" id="abstract-${index}" style="display: none;">
-                        <p>${pub.abstract}</p>
-                    </div>
+                <div class="pub-abstract" id="abstract-${index}" style="display: none;">
+                    <p>${pub.abstract}</p>
                 </div>
                 ` : ''}
-                <div class="pub-links">
-                    ${pub.doi ? `<a href="${pub.doi}" class="pub-link" target="_blank"><i class="fas fa-external-link-alt"></i> DOI</a>` : ''}
-                    ${pub.pdf ? `<a href="${pub.pdf}" class="pub-link" target="_blank"><i class="fas fa-file-pdf"></i> PDF</a>` : ''}
-                    ${pub.code ? `<a href="${pub.code}" class="pub-link" target="_blank"><i class="fas fa-code"></i> Code</a>` : ''}
-                </div>
             </div>
         </div>
     `).join('');
@@ -234,8 +236,6 @@ function updateContactInfo(profile) {
 
     if (profile.socialLinks) {
         updateLink('contactGoogleScholar', profile.socialLinks.googleScholar);
-        updateLink('contactResearchGate', profile.socialLinks.researchGate);
-        updateLink('contactOrcid', profile.socialLinks.orcid);
         updateLink('contactGithub', profile.socialLinks.github);
     }
 }

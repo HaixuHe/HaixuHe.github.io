@@ -166,6 +166,7 @@ async function loadData() {
         data = await response.json();
         
         populateProfile();
+        populateSite();
         populateStats();
         populatePublications();
         populatePatents();
@@ -176,6 +177,12 @@ async function loadData() {
     }
 }
 
+function populateSite() {
+    const site = data.site || {};
+    document.getElementById('siteTitle').value = site.title || '';
+    document.getElementById('siteDescription').value = site.description || '';
+}
+
 function populateProfile() {
     const profile = data.profile || {};
     
@@ -183,6 +190,7 @@ function populateProfile() {
     document.getElementById('nameEn').value = profile.nameEn || '';
     document.getElementById('title').value = profile.title || '';
     document.getElementById('description').value = profile.description || '';
+    document.getElementById('aboutIntroField').value = profile.aboutIntro || '';
     document.getElementById('email').value = profile.email || '';
     document.getElementById('address').value = profile.address || '';
     document.getElementById('university').value = profile.university || '';
@@ -203,10 +211,7 @@ function populateProfile() {
 
     const social = profile.socialLinks || {};
     document.getElementById('googleScholar').value = social.googleScholar || '';
-    document.getElementById('researchGate').value = social.researchGate || '';
     document.getElementById('github').value = social.github || '';
-    document.getElementById('linkedin').value = social.linkedin || '';
-    document.getElementById('orcid').value = social.orcid || '';
 }
 
 function addEducation(edu = {}, index = null) {
@@ -247,13 +252,11 @@ function removeItem(button) {
 }
 
 function populateStats() {
-    const stats = data.stats || {};
     const autoStats = calculateAutoStats();
     
     document.getElementById('pubCountDisplay').value = autoStats.publications;
     document.getElementById('patentCountDisplay').value = autoStats.patents;
     document.getElementById('projectCountDisplay').value = autoStats.projects;
-    document.getElementById('citationCount').value = stats.citations || 0;
 }
 
 function calculateAutoStats() {
@@ -545,11 +548,17 @@ function removeProject(index) {
 }
 
 function collectData() {
+    data.site = {
+        title: document.getElementById('siteTitle').value,
+        description: document.getElementById('siteDescription').value
+    };
+
     data.profile = {
         name: document.getElementById('name').value,
         nameEn: document.getElementById('nameEn').value,
         title: document.getElementById('title').value,
         description: document.getElementById('description').value,
+        aboutIntro: document.getElementById('aboutIntroField').value,
         email: document.getElementById('email').value,
         address: document.getElementById('address').value,
         university: document.getElementById('university').value,
@@ -559,12 +568,12 @@ function collectData() {
         researchInterests: [],
         socialLinks: {
             googleScholar: document.getElementById('googleScholar').value,
-            researchGate: document.getElementById('researchGate').value,
-            github: document.getElementById('github').value,
-            linkedin: document.getElementById('linkedin').value,
-            orcid: document.getElementById('orcid').value
+            github: document.getElementById('github').value
         }
     };
+
+    // remove undefined aboutIntro
+    if (!data.profile.aboutIntro) delete data.profile.aboutIntro;
 
     document.querySelectorAll('#educationList input').forEach(input => {
         const parts = input.value.split(' - ');
@@ -583,10 +592,6 @@ function collectData() {
             data.profile.researchInterests.push(input.value.trim());
         }
     });
-
-    data.stats = {
-        citations: parseInt(document.getElementById('citationCount').value) || 0
-    };
 
     document.querySelectorAll('#publicationsList .item-card').forEach(card => {
         const index = parseInt(card.dataset.index);

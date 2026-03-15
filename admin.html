@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>数据管理 - 个人主页后台</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link rel="stylesheet" href="admin-style.css">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -16,6 +17,10 @@
                 <h2>数据管理</h2>
             </div>
             <nav class="sidebar-nav">
+                <a href="#site" class="nav-item" data-section="site">
+                    <i class="fas fa-globe"></i>
+                    <span>站点信息</span>
+                </a>
                 <a href="#profile" class="nav-item active" data-section="profile">
                     <i class="fas fa-user"></i>
                     <span>个人信息</span>
@@ -66,6 +71,20 @@
             </div>
 
             <div class="content-area">
+                <section id="site" class="section">
+                    <h2 class="section-title">站点信息</h2>
+                    <form id="siteForm" class="form">
+                        <div class="form-group">
+                            <label for="siteTitle">网页标题（浏览器标签页）</label>
+                            <input type="text" id="siteTitle" name="siteTitle" placeholder="贺海旭 | 遥感博士">
+                        </div>
+                        <div class="form-group">
+                            <label for="siteDescription">SEO 描述（meta description）</label>
+                            <textarea id="siteDescription" name="siteDescription" rows="2" placeholder="遥感博士个人主页 - 研究领域、论文发表、专利与项目介绍"></textarea>
+                        </div>
+                    </form>
+                </section>
+
                 <section id="profile" class="section active">
                     <h2 class="section-title">个人信息</h2>
                     <form id="profileForm" class="form">
@@ -84,8 +103,12 @@
                             <input type="text" id="title" name="title" required>
                         </div>
                         <div class="form-group">
-                            <label for="description">个人简介</label>
-                            <textarea id="description" name="description" rows="3"></textarea>
+                            <label for="description">个人简介（一句话，用于首页副标题）</label>
+                            <textarea id="description" name="description" rows="2"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="aboutIntroField">关于我 - 完整介绍段落</label>
+                            <textarea id="aboutIntroField" name="aboutIntro" rows="3" placeholder="你好！我是贺海旭，专注于..."></textarea>
                         </div>
                         <div class="form-group">
                             <label for="email">电子邮箱</label>
@@ -126,23 +149,9 @@
                                 <input type="url" id="googleScholar" name="googleScholar">
                             </div>
                             <div class="form-group">
-                                <label for="researchGate">ResearchGate</label>
-                                <input type="url" id="researchGate" name="researchGate">
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group">
                                 <label for="github">GitHub</label>
                                 <input type="url" id="github" name="github">
                             </div>
-                            <div class="form-group">
-                                <label for="linkedin">LinkedIn</label>
-                                <input type="url" id="linkedin" name="linkedin">
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="orcid">ORCID</label>
-                            <input type="url" id="orcid" name="orcid">
                         </div>
                     </form>
                 </section>
@@ -187,7 +196,6 @@
                         <div>
                             <p><strong>自动统计说明：</strong></p>
                             <p>• 发表论文数、授权专利数、参与项目数会根据实际数据自动计算</p>
-                            <p>• 仅需手动更新论文引用数</p>
                         </div>
                     </div>
                     <form id="statsForm" class="form">
@@ -208,11 +216,6 @@
                                 <label>参与项目数</label>
                                 <input type="text" id="projectCountDisplay" disabled style="background: #f3f4f6; cursor: not-allowed;">
                                 <small style="color: #6b7280; font-size: 0.85rem; margin-top: 4px; display: block;">自动统计</small>
-                            </div>
-                            <div class="form-group">
-                                <label for="citationCount">论文引用数 *</label>
-                                <input type="number" id="citationCount" name="citations" min="0" required>
-                                <small style="color: #6b7280; font-size: 0.85rem; margin-top: 4px; display: block;">手动更新</small>
                             </div>
                         </div>
                     </form>

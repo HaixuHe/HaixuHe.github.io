@@ -48,9 +48,11 @@ function populatePage() {
         `你好！我是${profile.name || '贺海旭'}，${profile.description || ''}`;
 
     if (profile.education && profile.education.length > 0) {
-        const eduHtml = profile.education.map(e => 
-            `${e.degree} - ${e.major}<br>`
-        ).join('');
+        const eduHtml = profile.education.map(e => {
+            const main = [e.degree, e.major].filter(Boolean).join(' - ');
+            const meta = [e.school, e.year].filter(Boolean).join(' · ');
+            return meta ? `${main}<br><small style="color:var(--text-muted,#888);font-size:0.85em">${meta}</small>` : main;
+        }).join('<br>');
         document.getElementById('educationInfo').innerHTML = eduHtml;
     }
 

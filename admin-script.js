@@ -256,11 +256,21 @@ function addEducation(edu = {}, index = null) {
     const educationList = document.getElementById('educationList');
     const div = document.createElement('div');
     div.className = 'dynamic-item';
+    const idx = index !== null ? index : educationList.children.length;
     div.innerHTML = `
-        <div class="dynamic-item-content">
-            <input type="text" placeholder="学位 - 专业 - 学校 - 年份" 
-                   value="${edu.degree || ''} - ${edu.major || ''} - ${edu.school || ''} - ${edu.year || ''}"
-                   data-field="education" data-index="${index !== null ? index : educationList.children.length}">
+        <div class="dynamic-item-content" style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;">
+            <input type="text" placeholder="学位（如：博士）"
+                   value="${escapeHtml(edu.degree || '')}"
+                   data-field="edu-degree" data-index="${idx}">
+            <input type="text" placeholder="专业（如：遥感科学）"
+                   value="${escapeHtml(edu.major || '')}"
+                   data-field="edu-major" data-index="${idx}">
+            <input type="text" placeholder="学校"
+                   value="${escapeHtml(edu.school || '')}"
+                   data-field="edu-school" data-index="${idx}">
+            <input type="text" placeholder="年份（如：2021-2024）"
+                   value="${escapeHtml(edu.year || '')}"
+                   data-field="edu-year" data-index="${idx}">
         </div>
         <button class="btn btn-delete" onclick="removeItem(this)">
             <i class="fas fa-trash"></i>
@@ -1114,15 +1124,13 @@ function collectData() {
     // remove undefined aboutIntro
     if (!data.profile.aboutIntro) delete data.profile.aboutIntro;
 
-    document.querySelectorAll('#educationList input').forEach(input => {
-        const parts = input.value.split(' - ');
-        if (parts.length >= 4) {
-            data.profile.education.push({
-                degree: parts[0].trim(),
-                major: parts[1].trim(),
-                school: parts[2].trim(),
-                year: parts[3].trim()
-            });
+    document.querySelectorAll('#educationList .dynamic-item').forEach(row => {
+        const degree = (row.querySelector('[data-field="edu-degree"]')?.value || '').trim();
+        const major = (row.querySelector('[data-field="edu-major"]')?.value || '').trim();
+        const school = (row.querySelector('[data-field="edu-school"]')?.value || '').trim();
+        const year = (row.querySelector('[data-field="edu-year"]')?.value || '').trim();
+        if (degree || major || school || year) {
+            data.profile.education.push({ degree, major, school, year });
         }
     });
 

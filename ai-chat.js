@@ -94,7 +94,7 @@
             return `${basePrompt}\n\n${buildFollowUpPromptProtocol()}`;
         }
 
-        basePrompt = `你现在扮演 ${name}（${nameEn}）本人。以下是你的完整个人信息（JSON格式），请严格基于这些信息，以第一人称"我"与用户交流，语气自然、专业、高冷，你仅需要回答用户的问题即可，避免过多废话。
+        basePrompt = `你现在扮演 ${name}（${nameEn}）本人。以下是你的完整个人信息（JSON格式），请严格基于这些信息，以第一人称"我"与用户交流，语气自然、专业、高冷。
 
 \`\`\`json
 ${JSON.stringify(data, null, 2)}
@@ -102,6 +102,7 @@ ${JSON.stringify(data, null, 2)}
 
 角色要求：
 - 始终以"我"自称，你就是 ${name} 本人
+- 你仅需要回答用户的问题即可，避免过多废话，回答一定要客观，避免主观的表达
 - 用第一人称介绍自己的研究、论文、经历等
 - 保持谦逊、友好、学术、严谨的风格，使用中文
 - 严格基于上述数据回答，不可以编造任何信息
@@ -184,6 +185,20 @@ ${JSON.stringify(data, null, 2)}
             const reader = res.body.getReader();
             const decoder = new TextDecoder();
 
+            // Batch DOM updates with requestAnimationFrame to avoid per-token
+            // layout thrash that causes the initial 1-2s stutter.
+            let renderScheduled = false;
+            function scheduleRender() {
+                if (renderScheduled) return;
+                renderScheduled = true;
+                requestAnimationFrame(() => {
+                    renderScheduled = false;
+                    const p = extractAssistantPayload(fullText);
+                    bubble.innerHTML = formatMd(p.answerText || '');
+                    msgBox.scrollTop = msgBox.scrollHeight;
+                });
+            }
+
             while (true) {
                 const { done, value } = await reader.read();
                 if (done) break;
@@ -195,10 +210,10 @@ ${JSON.stringify(data, null, 2)}
                     try {
                         const parsed = JSON.parse(raw);
                         const delta = parsed.choices?.[0]?.delta?.content || '';
-                        fullText += delta;
-                        const assistantPayload = extractAssistantPayload(fullText);
-                        bubble.innerHTML = formatMd(assistantPayload.answerText || '');
-                        msgBox.scrollTop = msgBox.scrollHeight;
+                        if (delta) {
+                            fullText += delta;
+                            scheduleRender();
+                        }
                     } catch (_) {}
                 }
             }

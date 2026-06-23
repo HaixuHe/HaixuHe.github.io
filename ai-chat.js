@@ -1,7 +1,7 @@
 // AI Chat Assistant — powered by 硅基流动 (SiliconFlow)
 (function () {
     const SF_BASE = 'https://api.siliconflow.cn/v1';
-    const SF_MODEL = 'Pro/deepseek-ai/DeepSeek-V3.2';
+    const SF_MODEL = 'deepseek-ai/DeepSeek-V4-Flash';
     const FOLLOW_UP_MARKER = '\n\n<<<FOLLOW_UP_PROMPTS>>>\n';
     const DEFAULT_PROMPTS = [
         '请先用第一人称简单介绍一下你自己和目前的研究方向。',

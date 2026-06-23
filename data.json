@@ -46,6 +46,26 @@
   },
   "publications": [
     {
+      "id": "pub402507",
+      "year": "2026",
+      "type": "journal",
+      "title": "地质资源环境高光谱小卫星数据预处理及技术规程构建",
+      "authors": [
+        "贺海旭",
+        "阎继宁",
+        "周钊颖",
+        "荆子晨",
+        "贺湘友",
+        "江子枫"
+      ],
+      "journal": "测绘标准化",
+      "doi": "10.20007/j.cnki.61-1275/P.2026.01.03",
+      "pdf": "pdfs/publications/pub402507-1782223465217-_.pdf",
+      "code": "",
+      "highlight": false,
+      "abstract": "随着我国高光谱小卫星技术的快速发展，地质资源环境监测对高光谱数据预处理的标准化需求日益迫切。本文针对地质资源环境应用领域复杂地形、矿集区等特殊场景的数据处理需求，系统梳理了国内外高光谱卫星数据预处理技术的发展现状与标准化进展，分析了现有标准在地质资源环境应用中的局限性。在此基础上，提出了一套面向地质资源环境的高光谱小卫星数据预处理技术规程，明确了Level 0、Level 1、Level 2三级数据产品的定义与技术要求，构建了涵盖解格式、系统辐射校正、系统地形校正的完整预处理流程，规定了各处理阶段的关键技术参数与质量控制指标。通过统一数据格式、处理流程和质量标准，将提升高光谱小卫星数据的处理精度与产品一致性，可为地质矿产资源勘探、生态环境监测、灾害评估等领域提供标准化的数据支撑，推动我国高光谱遥感技术的规范化应用。"
+    },
+    {
       "id": "pub813396",
       "year": "2026",
       "type": "journal",
@@ -58,9 +78,9 @@
       ],
       "journal": "IEEE Transactions on Geoscience and Remote Sensing",
       "doi": "10.1109/TGRS.2026.3698656",
-      "pdf": "pdfs/publications/pub813396-1782223194586-he-2026-on-orbit-swir-imagery-mtf-compensation-for-the-geology-1-satellite-using-cross-spectral-structural-p.pdf",
+      "pdf": "https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=11541215",
       "code": "",
-      "highlight": true,
+      "highlight": false,
       "abstract": "The Geology-1 hyperspectral satellite employs a lightweight and highly integrated payload architecture, establishing a novel paradigm for commercial small-satellite-based geological observation. However, the compact optomechanical conﬁguration exacerbates the coupling among residual attitude disturbances, cryocooler-induced microvibrations, and the imaging chain, leading to systematic degradation of the system modulation transfer function (MTF) in short-wave infrared (SWIR) imagery. To address this challenge, we propose a structure-guided, two-stage Geology-1 SWIR imagery MTF compensation (GSMC) framework. This framework leverages coregistered visible and near-infrared (VNIR) imagery, which oﬀers superior spatial resolution and enhanced imaging stability, as a natural structural prior. Consequently, a zero-shot compensation model is constructed without requiring external training data. Experimental results demonstrate that GSMC delivers consistent and superior performance across diverse geological scenes. Quantitative evaluation shows that the MTF at the Nyquist frequency increases from 0.204 to 0.297 after compensation. The proposed method preserves high radiometric ﬁdelity, with a mean relative error of only 0.57%, while also improving downstream task performance by increasing land-cover classiﬁcation accuracy from 83.43% to 89.19%. In addition, spectral consistency analysis veriﬁes that the cross-spectral guidance strategy does not distort SWIR-speciﬁc information, with spectral angle mapper (SAM) values remaining below 0.05. These results indicate that the proposed framework eﬀectively compensates for time-varying jitter degradation in Geology-1 imagery and provides reliable technical support for quantitative on-orbit processing and highprecision geological mapping."
     },
     {
